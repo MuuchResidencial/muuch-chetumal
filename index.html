@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>App Chetumal — Finanzas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gris-deep:   #F3F4F6;
+  --gris-mid:    #FAFAFB;
+  --plata:       #6B7280;
+  --plata-b:     rgba(107,114,128,.45);
+  --plata-glow:  rgba(107,114,128,.10);
+  --tinta:       #2B303B;
+  --tinta-soft:  rgba(43,48,59,.55);
+  --borde:       #E5E7EB;
+  --verde: #1E8E5A;   --verde-bg: #E7F5EE;
+  --rojo:  #C0392B;   --rojo-bg:  #FBEAE8;
+  --ambar: #B7791F;   --ambar-bg: #FBF2E3;
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+body { font-family:'Segoe UI',Arial,sans-serif; background:var(--gris-deep); color:var(--tinta); min-height:100vh; }
+.hidden { display:none !important; }
+.screen { display:none; min-height:100vh; flex-direction:column; }
+.screen.active { display:flex; }
+
+/* INICIO */
+#s-inicio { background:var(--gris-deep); align-items:center; justify-content:center; padding:32px 24px; }
+.inicio-logo { text-align:center; margin-bottom:40px; }
+.inicio-logo .logo-img { width:96px; height:96px; border-radius:50%; border:2.5px solid var(--plata-b);
+  display:flex; align-items:center; justify-content:center; font-family:'Playfair Display',serif;
+  font-weight:700; font-size:26px; color:var(--plata); background:#fff; margin:0 auto 16px;
+  box-shadow:0 0 0 6px var(--plata-glow); }
+.inicio-logo h1 { font-family:'Playfair Display',serif; font-size:26px; font-weight:700; }
+.inicio-logo .sub { font-size:9px; color:var(--plata); letter-spacing:2.5px; text-transform:uppercase; font-weight:700; margin-top:5px; }
+.inicio-btns { display:flex; flex-direction:column; gap:10px; width:100%; max-width:340px; }
+.btn-primary { background:var(--tinta); border:1.5px solid var(--tinta); color:#fff; border-radius:13px;
+  padding:15px; font-size:15px; font-weight:700; cursor:pointer; }
+.btn-primary:active { transform:scale(0.97); }
+.btn-secondary { background:#fff; border:1.5px solid var(--borde); color:var(--tinta); border-radius:13px;
+  padding:14px; font-size:15px; font-weight:700; cursor:pointer; }
+.btn-secondary:active { transform:scale(0.97); }
+
+/* HEADER */
+.app-header { background:#fff; padding:14px 18px; display:flex; align-items:center; gap:12px; border-bottom:1px solid var(--borde); }
+.app-header .back { background:none; border:none; color:var(--plata); font-size:22px; cursor:pointer; padding:4px; }
+.app-header .header-title h1 { font-family:'Playfair Display',serif; font-size:17px; font-weight:700; }
+.app-header .header-title p { font-size:11px; color:var(--plata); margin-top:2px; }
+
+/* CONTENT */
+.content { flex:1; padding:14px 16px; max-width:480px; width:100%; margin:0 auto; background:var(--gris-mid); }
+
+.card { background:#fff; border:1px solid var(--borde); border-radius:16px; padding:18px; box-shadow:0 2px 10px rgba(17,24,39,.04); margin-bottom:14px; }
+.card-title { font-size:15px; font-weight:700; margin-bottom:14px; }
+.fg { margin-bottom:14px; }
+.fg label { display:block; font-size:12px; color:var(--tinta-soft); margin-bottom:5px; font-weight:600; }
+.fg select { width:100%; padding:12px 14px; border:1.5px solid var(--borde); border-radius:10px; font-size:14px; background:var(--gris-mid); color:var(--tinta); }
+
+.seccion-titulo { font-size:12px; font-weight:700; color:#9CA3AF; text-transform:uppercase; letter-spacing:.6px; margin:18px 0 10px; }
+
+/* RESUMEN COMITÉ */
+.resumen-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:6px; }
+.resumen-box { background:#fff; border:1px solid var(--borde); border-radius:12px; padding:14px; text-align:center; }
+.resumen-box .rb-label { font-size:11px; color:var(--tinta-soft); margin-bottom:5px; }
+.resumen-box .rb-valor { font-size:20px; font-weight:700; }
+.resumen-box.verde .rb-valor { color:var(--verde); }
+.resumen-box.rojo .rb-valor { color:var(--rojo); }
+
+/* Lista unidades */
+.unidad-row { background:#fff; border:1px solid var(--borde); border-radius:12px; padding:13px 16px;
+  margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; }
+.unidad-row:active { background:var(--gris-mid); }
+.unidad-nombre { font-size:14px; font-weight:700; }
+.unidad-edif { font-size:11.5px; color:#9CA3AF; }
+.badge { font-size:11px; font-weight:700; padding:4px 10px; border-radius:20px; }
+.badge.Pagado { background:var(--verde-bg); color:var(--verde); }
+.badge.Adeudo { background:var(--rojo-bg); color:var(--rojo); }
+.badge.recargo { background:var(--ambar-bg); color:var(--ambar); }
+
+/* Historial */
+.historial-mes { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--gris-mid); }
+.historial-mes:last-child { border-bottom:none; }
+.hm-periodo { font-size:13px; color:var(--tinta-soft); }
+.hm-monto { font-size:13.5px; font-weight:700; }
+
+.loader { text-align:center; padding:40px 20px; color:var(--tinta-soft); font-size:13px; }
+.error-box { background:var(--rojo-bg); color:var(--rojo); border-radius:10px; padding:12px 14px; font-size:13px; margin-bottom:12px; }
+
+.footnote { text-align:center; font-size:11px; color:#9CA3AF; margin-top:20px; padding-bottom:20px; }
+</style>
+</head>
+<body>
+
+<!-- INICIO -->
+<div class="screen active" id="s-inicio">
+  <div class="inicio-logo">
+    <div class="logo-img">CH</div>
+    <h1>App Chetumal</h1>
+    <div class="sub">Finanzas de la privada</div>
+  </div>
+  <div class="inicio-btns">
+    <button class="btn-primary" onclick="entrarComite()">Entrar como Comité</button>
+    <button class="btn-secondary" onclick="ir('s-select-depto')">Entrar como Propietario</button>
+  </div>
+</div>
+
+<!-- SELECCIÓN DE DEPTO (simula login de propietario) -->
+<div class="screen" id="s-select-depto">
+  <div class="app-header">
+    <button class="back" onclick="ir('s-inicio')">←</button>
+    <div class="header-title"><h1>Propietario</h1><p>Selecciona tu unidad</p></div>
+  </div>
+  <div class="content">
+    <div class="card">
+      <div class="card-title">¿Cuál es tu depto?</div>
+      <div class="fg">
+        <label>Unidad</label>
+        <select id="select-unidad"></select>
+      </div>
+      <button class="btn-primary" style="width:100%;" onclick="entrarPropietario()">Ver mi estado de cuenta</button>
+      <div class="hint" style="font-size:11.5px;color:#9CA3AF;margin-top:8px;">* Esto simula el login — luego cada quien entrará con su contraseña asignada.</div>
+    </div>
+  </div>
+</div>
+
+<!-- VISTA COMITÉ -->
+<div class="screen" id="s-comite">
+  <div class="app-header">
+    <button class="back" onclick="ir('s-inicio')">←</button>
+    <div class="header-title"><h1>Panel del Comité</h1><p id="comite-sub">Cargando...</p></div>
+  </div>
+  <div class="content" id="comite-content">
+    <div class="loader">Cargando información financiera…</div>
+  </div>
+</div>
+
+<!-- DETALLE DE UNIDAD (comité) -->
+<div class="screen" id="s-detalle">
+  <div class="app-header">
+    <button class="back" onclick="ir('s-comite')">←</button>
+    <div class="header-title"><h1 id="detalle-titulo">Unidad</h1><p>Historial completo</p></div>
+  </div>
+  <div class="content" id="detalle-content"></div>
+</div>
+
+<!-- VISTA PROPIETARIO -->
+<div class="screen" id="s-propietario">
+  <div class="app-header">
+    <button class="back" onclick="ir('s-select-depto')">←</button>
+    <div class="header-title"><h1 id="prop-titulo">Mi unidad</h1><p>Estado de cuenta</p></div>
+  </div>
+  <div class="content" id="prop-content"></div>
+</div>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbx6UkMVs3Rs-GCz0u1bMampL3zZlsVp0pwa8agZNBs064mPpdZT8JgTbFqA0F17euuP/exec";
+let dataUnidades = [];
+
+function ir(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function periodoLegible(p){
+  const meses = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+  const [y,m] = p.split("-");
+  return meses[parseInt(m,10)-1] + " " + y;
+}
+
+async function cargarDatos(){
+  if (dataUnidades.length) return dataUnidades;
+  const res = await fetch(API_URL + "?accion=estadoPagos");
+  dataUnidades = await res.json();
+  return dataUnidades;
+}
+
+async function entrarComite(){
+  ir('s-comite');
+  try {
+    const data = await cargarDatos();
+    document.getElementById('comite-sub').textContent = data.length + " unidades registradas";
+    renderComite(data);
+  } catch(err){
+    document.getElementById('comite-content').innerHTML =
+      '<div class="error-box">No se pudo cargar la información. Verifica la conexión con el backend.</div>';
+  }
+}
+
+function ultimoEstado(historial){
+  if (!historial.length) return null;
+  return historial[historial.length-1];
+}
+
+function renderComite(data){
+  let pagados = 0, adeudos = 0;
+  data.forEach(u => {
+    const ult = ultimoEstado(u.historial);
+    if (ult && ult.estado === "Pagado") pagados++; else if (ult) adeudos++;
+  });
+
+  let html = `
+    <div class="resumen-grid">
+      <div class="resumen-box verde"><div class="rb-label">Al corriente</div><div class="rb-valor">${pagados}</div></div>
+      <div class="resumen-box rojo"><div class="rb-label">Con adeudo</div><div class="rb-valor">${adeudos}</div></div>
+    </div>
+    <div class="seccion-titulo">Todas las unidades</div>
+  `;
+
+  data.forEach(u => {
+    const ult = ultimoEstado(u.historial);
+    const estado = ult ? ult.estado : "—";
+    const badgeClass = estado === "Pagado" ? "Pagado" : "Adeudo";
+    html += `
+      <div class="unidad-row" onclick="verDetalle('${u.unidad}')">
+        <div>
+          <div class="unidad-nombre">${u.unidad}</div>
+          <div class="unidad-edif">Edificio ${u.edificio}${ult && ult.recargo ? ' · con recargo' : ''}</div>
+        </div>
+        <span class="badge ${badgeClass}">${estado}</span>
+      </div>
+    `;
+  });
+
+  document.getElementById('comite-content').innerHTML = html;
+}
+
+function verDetalle(unidad){
+  const u = dataUnidades.find(x => x.unidad === unidad);
+  if (!u) return;
+  document.getElementById('detalle-titulo').textContent = u.unidad;
+
+  let html = '<div class="card"><div class="card-title">Historial de pagos</div>';
+  u.historial.slice().reverse().forEach(h => {
+    const color = h.estado === "Pagado" ? "var(--verde)" : "var(--rojo)";
+    html += `
+      <div class="historial-mes">
+        <span class="hm-periodo">${periodoLegible(h.periodo)}${h.recargo ? ' (con recargo)' : ''}</span>
+        <span class="hm-monto" style="color:${color}">${h.estado === "Pagado" ? "$"+h.monto.toLocaleString() : "Adeudo"}</span>
+      </div>
+    `;
+  });
+  html += '</div>';
+
+  document.getElementById('detalle-content').innerHTML = html;
+  ir('s-detalle');
+}
+
+async function prepararSelectUnidades(){
+  try {
+    const data = await cargarDatos();
+    const sel = document.getElementById('select-unidad');
+    sel.innerHTML = data.map(u => `<option value="${u.unidad}">${u.unidad}</option>`).join('');
+  } catch(err){
+    document.getElementById('select-unidad').innerHTML = '<option>Error al cargar</option>';
+  }
+}
+
+function entrarPropietario(){
+  const unidad = document.getElementById('select-unidad').value;
+  const u = dataUnidades.find(x => x.unidad === unidad);
+  if (!u) return;
+  document.getElementById('prop-titulo').textContent = "Depto " + u.unidad;
+
+  const ult = ultimoEstado(u.historial);
+  let html = '';
+  if (ult){
+    const color = ult.estado === "Pagado" ? "var(--verde)" : "var(--rojo)";
+    html += `
+      <div class="card" style="text-align:center;">
+        <div class="card-title">Estado actual (${periodoLegible(ult.periodo)})</div>
+        <div style="font-size:26px;font-weight:800;color:${color};">${ult.estado === "Pagado" ? "Al corriente" : "Con adeudo"}</div>
+        ${ult.recargo ? '<div style="font-size:12px;color:var(--ambar);margin-top:6px;">Incluye recargo por atraso</div>' : ''}
+      </div>
+    `;
+  }
+
+  html += '<div class="seccion-titulo">Historial</div><div class="card">';
+  u.historial.slice().reverse().forEach(h => {
+    const color = h.estado === "Pagado" ? "var(--verde)" : "var(--rojo)";
+    html += `
+      <div class="historial-mes">
+        <span class="hm-periodo">${periodoLegible(h.periodo)}${h.recargo ? ' (con recargo)' : ''}</span>
+        <span class="hm-monto" style="color:${color}">${h.estado === "Pagado" ? "$"+h.monto.toLocaleString() : "Adeudo"}</span>
+      </div>
+    `;
+  });
+  html += '</div>';
+
+  document.getElementById('prop-content').innerHTML = html;
+  ir('s-propietario');
+}
+
+// Precarga el selector de unidades en cuanto se entra a esa pantalla
+document.addEventListener('DOMContentLoaded', () => {
+  const btnPropietario = document.querySelector('button[onclick="ir(\'s-select-depto\')"]');
+  if (btnPropietario){
+    btnPropietario.addEventListener('click', prepararSelectUnidades);
+  }
+});
+</script>
+
+<div class="footnote">MÚUCH' Administración Residencial · App Chetumal — conectado a datos reales</div>
+
+</body>
+</html>
