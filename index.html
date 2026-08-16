@@ -122,26 +122,49 @@ body { font-family:'Segoe UI',Arial,sans-serif; background:var(--cielo-deep); co
     <div class="admin-txt">MÚUCH' Administración Residencial</div>
   </div>
   <div class="inicio-btns">
-    <button class="btn-primary" onclick="entrarComite()">Entrar como Comité</button>
+    <button class="btn-primary" onclick="ir('s-login-comite')">Entrar como Comité</button>
     <button class="btn-secondary" onclick="ir('s-select-depto')">Entrar como Propietario</button>
   </div>
 </div>
 
-<!-- SELECCIÓN DE DEPTO -->
+<!-- LOGIN PROPIETARIO -->
 <div class="screen" id="s-select-depto">
   <div class="app-header">
     <button class="back" onclick="ir('s-inicio')">←</button>
-    <div class="header-title"><h1>Propietario</h1><p>Selecciona tu unidad</p></div>
+    <div class="header-title"><h1>Propietario</h1><p>Accede a tu estado de cuenta</p></div>
   </div>
   <div class="content">
     <div class="card">
-      <div class="card-title">¿Cuál es tu depto?</div>
+      <div class="card-title">Iniciar sesión</div>
       <div class="fg">
         <label>Unidad</label>
         <select id="select-unidad"></select>
       </div>
+      <div class="fg">
+        <label>Clave de acceso</label>
+        <input type="password" id="input-clave-prop" placeholder="••••" maxlength="4" inputmode="numeric" style="width:100%; padding:12px 14px; border:1.5px solid var(--cielo-line); border-radius:10px; font-size:14px; background:var(--cielo-mid); color:var(--tinta);">
+      </div>
+      <div id="prop-login-error" class="error-box hidden"></div>
       <button class="btn-primary" style="width:100%;" onclick="entrarPropietario()">Ver mi estado de cuenta</button>
-      <div class="hint" style="font-size:11.5px;color:var(--azul-txt);opacity:.7;margin-top:8px;">* Selector temporal — luego cada quien entrará con su contraseña asignada.</div>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN COMITÉ -->
+<div class="screen" id="s-login-comite">
+  <div class="app-header">
+    <button class="back" onclick="ir('s-inicio')">←</button>
+    <div class="header-title"><h1>Comité</h1><p>Acceso administrativo</p></div>
+  </div>
+  <div class="content">
+    <div class="card">
+      <div class="card-title">Iniciar sesión</div>
+      <div class="fg">
+        <label>Clave de acceso</label>
+        <input type="password" id="input-clave-comite" placeholder="Clave del comité" style="width:100%; padding:12px 14px; border:1.5px solid var(--cielo-line); border-radius:10px; font-size:14px; background:var(--cielo-mid); color:var(--tinta);">
+      </div>
+      <div id="comite-login-error" class="error-box hidden"></div>
+      <button class="btn-primary" style="width:100%;" onclick="entrarComite()">Entrar</button>
     </div>
   </div>
 </div>
@@ -177,11 +200,13 @@ body { font-family:'Segoe UI',Arial,sans-serif; background:var(--cielo-deep); co
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbyNO1UJVECG4Rf2I4sufQOK10ifT8IPYcqZ420BN-sUmXwkHrCVCN76RcEzBdkMkhx7/exec";
-let dataUnidades = [];
+let dataUnidad = null;   // datos de UN solo propietario logueado
+let dataComite = null;   // datos completos, solo tras login válido del comité
 
 function ir(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
+  if (id === 's-select-depto') prepararSelectUnidades();
 }
 
 function periodoLegible(p){
@@ -190,28 +215,35 @@ function periodoLegible(p){
   return meses[parseInt(m,10)-1] + " " + y;
 }
 
-async function cargarDatos(){
-  if (dataUnidades.length) return dataUnidades;
-  const res = await fetch(API_URL + "?accion=estadoPagos");
-  dataUnidades = await res.json();
-  return dataUnidades;
+function ultimoEstado(historial){
+  if (!historial || !historial.length) return null;
+  return historial[historial.length-1];
 }
 
+/* ── Login Comité ── */
 async function entrarComite(){
-  ir('s-comite');
+  const clave = document.getElementById('input-clave-comite').value.trim();
+  const errBox = document.getElementById('comite-login-error');
+  errBox.classList.add('hidden');
+
+  if (!clave){ errBox.textContent = "Ingresa la clave."; errBox.classList.remove('hidden'); return; }
+
   try {
-    const data = await cargarDatos();
+    const res = await fetch(API_URL + "?accion=loginComite&clave=" + encodeURIComponent(clave));
+    const data = await res.json();
+    if (data.error){
+      errBox.textContent = "Clave incorrecta.";
+      errBox.classList.remove('hidden');
+      return;
+    }
+    dataComite = data;
+    ir('s-comite');
     document.getElementById('comite-sub').textContent = data.length + " unidades registradas";
     renderComite(data);
   } catch(err){
-    document.getElementById('comite-content').innerHTML =
-      '<div class="error-box">No se pudo cargar la información. Verifica la conexión con el backend.</div>';
+    errBox.textContent = "No se pudo conectar con el servidor.";
+    errBox.classList.remove('hidden');
   }
-}
-
-function ultimoEstado(historial){
-  if (!historial.length) return null;
-  return historial[historial.length-1];
 }
 
 function renderComite(data){
@@ -248,7 +280,7 @@ function renderComite(data){
 }
 
 function verDetalle(unidad){
-  const u = dataUnidades.find(x => x.unidad === unidad);
+  const u = dataComite.find(x => x.unidad === unidad);
   if (!u) return;
   document.getElementById('detalle-titulo').textContent = u.unidad;
 
@@ -268,20 +300,44 @@ function verDetalle(unidad){
   ir('s-detalle');
 }
 
+/* ── Login Propietario ── */
 async function prepararSelectUnidades(){
+  const sel = document.getElementById('select-unidad');
+  sel.innerHTML = '<option>Cargando…</option>';
   try {
-    const data = await cargarDatos();
-    const sel = document.getElementById('select-unidad');
-    sel.innerHTML = data.map(u => `<option value="${u.unidad}">${u.unidad}</option>`).join('');
+    const res = await fetch(API_URL + "?accion=listaUnidades");
+    const lista = await res.json();
+    sel.innerHTML = lista.map(u => `<option value="${u}">${u}</option>`).join('');
   } catch(err){
-    document.getElementById('select-unidad').innerHTML = '<option>Error al cargar</option>';
+    sel.innerHTML = '<option>Error al cargar</option>';
   }
 }
 
-function entrarPropietario(){
+async function entrarPropietario(){
   const unidad = document.getElementById('select-unidad').value;
-  const u = dataUnidades.find(x => x.unidad === unidad);
-  if (!u) return;
+  const clave = document.getElementById('input-clave-prop').value.trim();
+  const errBox = document.getElementById('prop-login-error');
+  errBox.classList.add('hidden');
+
+  if (!clave){ errBox.textContent = "Ingresa tu clave."; errBox.classList.remove('hidden'); return; }
+
+  try {
+    const res = await fetch(API_URL + "?accion=loginPropietario&unidad=" + encodeURIComponent(unidad) + "&clave=" + encodeURIComponent(clave));
+    const data = await res.json();
+    if (data.error){
+      errBox.textContent = "Clave incorrecta para esta unidad.";
+      errBox.classList.remove('hidden');
+      return;
+    }
+    dataUnidad = data;
+    mostrarPropietario(data);
+  } catch(err){
+    errBox.textContent = "No se pudo conectar con el servidor.";
+    errBox.classList.remove('hidden');
+  }
+}
+
+function mostrarPropietario(u){
   document.getElementById('prop-titulo').textContent = "Depto " + u.unidad;
 
   const ult = ultimoEstado(u.historial);
@@ -311,13 +367,6 @@ function entrarPropietario(){
   document.getElementById('prop-content').innerHTML = html;
   ir('s-propietario');
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-  const btnPropietario = document.querySelector('button[onclick="ir(\'s-select-depto\')"]');
-  if (btnPropietario){
-    btnPropietario.addEventListener('click', prepararSelectUnidades);
-  }
-});
 </script>
 
 <div class="footnote">MÚUCH' Administración Residencial · App Chetumal</div>
