@@ -204,7 +204,7 @@ body { font-family:'Segoe UI',Arial,sans-serif; background:var(--cielo-deep); co
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbyUcC3hKzSvTaAVMGRXuUsvOSuqdJl0PQH23n480ogEz1O8O-2XwC5PIdyQ1YpV8b8l/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbxw6cDKZrizVQep7CsA9cexstQfrSwKkqKQ-PI58bM11-IA-AWU4BnsGNjS2OFgJOM/exec";
 let dataUnidad = null;   // datos de UN solo propietario logueado
 let dataComite = null;   // datos completos, solo tras login válido del comité
 
@@ -227,6 +227,7 @@ function ultimoEstado(historial){
 
 function construirSelectorPeriodo(historial, idPrefix){
   const anios = [...new Set(historial.map(h => h.periodo.split("-")[0]))].sort();
+  const ultimoAnio = anios[anios.length - 1];
   const nombresMeses = ["01-Ene","02-Feb","03-Mar","04-Abr","05-May","06-Jun","07-Jul","08-Ago","09-Sep","10-Oct","11-Nov","12-Dic"];
 
   let html = `
@@ -236,7 +237,7 @@ function construirSelectorPeriodo(historial, idPrefix){
         <div class="fg" style="flex:1; margin-bottom:0;">
           <label>Año</label>
           <select id="${idPrefix}-sel-anio" onchange="actualizarPeriodoSeleccionado('${idPrefix}')">
-            ${anios.map(a => `<option value="${a}">${a}</option>`).join('')}
+            ${anios.map(a => `<option value="${a}" ${a===ultimoAnio ? 'selected' : ''}>${a}</option>`).join('')}
           </select>
         </div>
         <div class="fg" style="flex:1; margin-bottom:0;">
@@ -246,7 +247,9 @@ function construirSelectorPeriodo(historial, idPrefix){
           </select>
         </div>
       </div>
-      <div id="${idPrefix}-resultado" style="margin-top:16px;"></div>
+      <div id="${idPrefix}-resultado" style="margin-top:16px;">
+        <div style="text-align:center; padding:10px; color:var(--azul-txt); font-size:12.5px;">Elige año y mes para ver ese periodo.</div>
+      </div>
     </div>
   `;
   return html;
@@ -265,11 +268,12 @@ function actualizarPeriodoSeleccionado(idPrefix){
     return;
   }
   const color = registro.estado === "Pagado" ? "var(--verde)" : "var(--rojo)";
+  const texto = registro.estado === "Pagado" ? "$" + registro.monto.toLocaleString() : (registro.monto > 0 ? "-$" + registro.monto.toLocaleString() : "Adeudo");
   box.innerHTML = `
     <div style="text-align:center; padding:10px 0;">
       <div style="font-size:12px; color:var(--azul-txt); margin-bottom:6px;">${periodoLegible(registro.periodo)}</div>
       <div style="font-size:24px; font-weight:800; color:${color}; font-family:'Playfair Display',serif;">
-        ${registro.estado === "Pagado" ? "$" + registro.monto.toLocaleString() : "Adeudo"}
+        ${texto}
       </div>
     </div>
   `;
@@ -304,10 +308,13 @@ function filtrarHistorial(idPrefix, filtro){
   let html = '';
   filtrado.slice().reverse().forEach(h => {
     const color = h.estado === "Pagado" ? "var(--verde)" : "var(--rojo)";
+    let texto;
+    if (h.estado === "Pagado") texto = "$" + h.monto.toLocaleString();
+    else texto = h.monto > 0 ? "-$" + h.monto.toLocaleString() : "Adeudo";
     html += `
       <div class="historial-mes">
         <span class="hm-periodo">${periodoLegible(h.periodo)}</span>
-        <span class="hm-monto" style="color:${color}">${h.estado === "Pagado" ? "$"+h.monto.toLocaleString() : "Adeudo"}</span>
+        <span class="hm-monto" style="color:${color}">${texto}</span>
       </div>
     `;
   });
@@ -321,8 +328,9 @@ function calcularTotalesPorAnio(historial){
   const totales = {};
   historial.forEach(h => {
     const anio = h.periodo.split("-")[0];
-    if (!totales[anio]) totales[anio] = 0;
-    if (h.estado === "Pagado") totales[anio] += h.monto;
+    if (!totales[anio]) totales[anio] = { aportado: 0, adeudo: 0 };
+    if (h.estado === "Pagado") totales[anio].aportado += h.monto;
+    else totales[anio].adeudo += h.monto;
   });
   return totales;
 }
@@ -331,12 +339,16 @@ function construirResumenAnual(historial, idPrefix){
   const totales = calcularTotalesPorAnio(historial);
   const anios = Object.keys(totales).sort();
 
-  let html = `<div class="card"><div class="card-title">Total aportado por año</div>`;
+  let html = `<div class="card"><div class="card-title">Resumen por año</div>`;
   anios.forEach(anio => {
+    const t = totales[anio];
     html += `
-      <div class="unidad-row" style="cursor:pointer;" onclick="toggleDesgloseAnio('${idPrefix}','${anio}')">
+      <div class="unidad-row" style="cursor:pointer; align-items:flex-start;" onclick="toggleDesgloseAnio('${idPrefix}','${anio}')">
         <div class="unidad-nombre">${anio}</div>
-        <span class="badge Pagado">$${totales[anio].toLocaleString()}</span>
+        <div style="text-align:right;">
+          <div class="badge Pagado" style="margin-bottom:4px; display:inline-block;">Aportado $${t.aportado.toLocaleString()}</div>
+          ${t.adeudo > 0 ? `<div class="badge Adeudo" style="display:inline-block;">Adeudo -$${t.adeudo.toLocaleString()}</div>` : ''}
+        </div>
       </div>
       <div id="${idPrefix}-desglose-${anio}" class="hidden" style="margin:-4px 0 10px 0; padding:0 4px;"></div>
     `;
@@ -360,10 +372,13 @@ function toggleDesgloseAnio(idPrefix, anio){
   let html = '';
   mesesAnio.forEach(h => {
     const color = h.estado === "Pagado" ? "var(--verde)" : "var(--rojo)";
+    let texto;
+    if (h.estado === "Pagado") texto = "$" + h.monto.toLocaleString();
+    else texto = h.monto > 0 ? "-$" + h.monto.toLocaleString() : "Adeudo";
     html += `
       <div class="historial-mes">
         <span class="hm-periodo">${periodoLegible(h.periodo)}</span>
-        <span class="hm-monto" style="color:${color}">${h.estado === "Pagado" ? "$"+h.monto.toLocaleString() : "Adeudo"}</span>
+        <span class="hm-monto" style="color:${color}">${texto}</span>
       </div>
     `;
   });
@@ -472,7 +487,6 @@ function verDetalle(unidad){
 
   document.getElementById('detalle-content').innerHTML = html;
   ir('s-detalle');
-  actualizarPeriodoSeleccionado('det');
   filtrarHistorial('det', 'todos');
 }
 
@@ -536,7 +550,6 @@ function mostrarPropietario(u){
 
   document.getElementById('prop-content').innerHTML = html;
   ir('s-propietario');
-  actualizarPeriodoSeleccionado('prop');
   filtrarHistorial('prop', 'todos');
 }
 </script>
