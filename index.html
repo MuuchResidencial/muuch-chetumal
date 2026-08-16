@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>App Chetumal — Finanzas</title>
+<title>Privada Chetumal — Finanzas</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 <style>
@@ -122,7 +122,7 @@ body { font-family:'Segoe UI',Arial,sans-serif; background:var(--cielo-deep); co
 <div class="screen active" id="s-inicio">
   <div class="inicio-logo">
     <img class="logo-img" src="logochetumal.jpeg" alt="Chetumal" onerror="this.onerror=null; this.outerHTML='<div class=&quot;logo-img&quot;>CH</div>';">
-    <h1>App Chetumal</h1>
+    <h1>Privada Chetumal</h1>
     <div class="sub">Finanzas de la privada</div>
     <div class="admin-txt">MÚUCH' Administración Residencial</div>
   </div>
@@ -406,12 +406,26 @@ function renderComite(data){
 
   let html = `
     <div class="resumen-grid">
-      <div class="resumen-box verde"><div class="rb-label">Al corriente</div><div class="rb-valor">${pagados}</div></div>
-      <div class="resumen-box rojo"><div class="rb-label">Con adeudo</div><div class="rb-valor">${adeudos}</div></div>
+      <div class="resumen-box verde" style="cursor:pointer;" id="btn-filtro-corriente" onclick="filtrarListaComite('corriente')">
+        <div class="rb-label">Al corriente</div><div class="rb-valor">${pagados}</div>
+      </div>
+      <div class="resumen-box rojo" style="cursor:pointer;" id="btn-filtro-adeudo" onclick="filtrarListaComite('adeudo')">
+        <div class="rb-label">Con adeudo</div><div class="rb-valor">${adeudos}</div>
+      </div>
     </div>
-    <div class="seccion-titulo">Todas las unidades</div>
+    <div style="display:flex; gap:8px; margin:10px 0 6px 0;">
+      <button class="filtro-btn active" id="btn-filtro-todos-comite" onclick="filtrarListaComite('todos')">Ver todas</button>
+    </div>
+    <div class="seccion-titulo">Unidades</div>
+    <div id="lista-unidades-comite"></div>
   `;
 
+  document.getElementById('comite-content').innerHTML = html;
+  renderListaUnidadesComite(data);
+}
+
+function renderListaUnidadesComite(data){
+  let html = '';
   data.forEach(u => {
     const ult = ultimoEstado(u.historial);
     const estado = ult ? ult.estado : "—";
@@ -426,8 +440,22 @@ function renderComite(data){
       </div>
     `;
   });
+  if (!data.length){
+    html = `<div style="text-align:center; padding:16px; color:var(--azul-txt); font-size:13px;">Sin unidades en este filtro.</div>`;
+  }
+  document.getElementById('lista-unidades-comite').innerHTML = html;
+}
 
-  document.getElementById('comite-content').innerHTML = html;
+function filtrarListaComite(filtro){
+  document.getElementById('btn-filtro-todos-comite').classList.toggle('active', filtro === 'todos');
+
+  let filtrado = dataComite;
+  if (filtro === 'corriente'){
+    filtrado = dataComite.filter(u => { const ult = ultimoEstado(u.historial); return ult && ult.estado === "Pagado"; });
+  } else if (filtro === 'adeudo'){
+    filtrado = dataComite.filter(u => { const ult = ultimoEstado(u.historial); return ult && ult.estado === "Adeudo"; });
+  }
+  renderListaUnidadesComite(filtrado);
 }
 
 function verDetalle(unidad){
@@ -513,7 +541,7 @@ function mostrarPropietario(u){
 }
 </script>
 
-<div class="footnote">MÚUCH' Administración Residencial · App Chetumal</div>
+<div class="footnote">MÚUCH' Administración Residencial · Privada Chetumal</div>
 
 </body>
 </html>
