@@ -109,6 +109,11 @@ body { font-family:'Segoe UI',Arial,sans-serif; background:var(--cielo-deep); co
 .error-box { background:var(--rojo-bg); color:var(--rojo); border-radius:10px; padding:12px 14px; font-size:13px; margin-bottom:12px; }
 
 .footnote { text-align:center; font-size:11px; color:var(--azul-txt); opacity:.55; margin-top:20px; padding-bottom:20px; }
+
+/* Filtro de historial (grande y simple) */
+.filtro-btn { flex:1; padding:13px 8px; border-radius:11px; border:1.5px solid var(--cielo-line);
+  background:#fff; font-size:13.5px; font-weight:700; color:var(--azul-txt); cursor:pointer; }
+.filtro-btn.active { background:var(--gris-btn); color:#fff; border-color:var(--gris-btn-d); }
 </style>
 </head>
 <body>
@@ -116,7 +121,7 @@ body { font-family:'Segoe UI',Arial,sans-serif; background:var(--cielo-deep); co
 <!-- INICIO -->
 <div class="screen active" id="s-inicio">
   <div class="inicio-logo">
-    <img class="logo-img" src="logochetumal.png" alt="Chetumal" onerror="this.onerror=null; this.outerHTML='<div class=&quot;logo-img&quot;>CH</div>';">
+    <img class="logo-img" src="logochetumal.jpeg" alt="Chetumal" onerror="this.onerror=null; this.outerHTML='<div class=&quot;logo-img&quot;>CH</div>';">
     <h1>App Chetumal</h1>
     <div class="sub">Finanzas de la privada</div>
     <div class="admin-txt">MÚUCH' Administración Residencial</div>
@@ -272,6 +277,46 @@ function actualizarPeriodoSeleccionado(idPrefix){
 
 let detalleActual = null;
 
+function obtenerHistorialPorPrefix(idPrefix){
+  return idPrefix.startsWith('det') ? dataComite.find(x => x.unidad === detalleActual).historial : dataUnidad.historial;
+}
+
+function construirFiltroHistorial(idPrefix){
+  return `
+    <div class="seccion-titulo">Historial completo</div>
+    <div style="display:flex; gap:8px; margin-bottom:10px;">
+      <button class="filtro-btn active" id="${idPrefix}-btn-todos" onclick="filtrarHistorial('${idPrefix}','todos')">Todos</button>
+      <button class="filtro-btn" id="${idPrefix}-btn-pagado" onclick="filtrarHistorial('${idPrefix}','Pagado')">Pagados</button>
+      <button class="filtro-btn" id="${idPrefix}-btn-adeudo" onclick="filtrarHistorial('${idPrefix}','Adeudo')">No pagados</button>
+    </div>
+    <div class="card" id="${idPrefix}-historial-lista"></div>
+  `;
+}
+
+function filtrarHistorial(idPrefix, filtro){
+  const historial = obtenerHistorialPorPrefix(idPrefix);
+  const filtrado = filtro === 'todos' ? historial : historial.filter(h => h.estado === filtro);
+
+  document.getElementById(idPrefix + '-btn-todos').classList.toggle('active', filtro === 'todos');
+  document.getElementById(idPrefix + '-btn-pagado').classList.toggle('active', filtro === 'Pagado');
+  document.getElementById(idPrefix + '-btn-adeudo').classList.toggle('active', filtro === 'Adeudo');
+
+  let html = '';
+  filtrado.slice().reverse().forEach(h => {
+    const color = h.estado === "Pagado" ? "var(--verde)" : "var(--rojo)";
+    html += `
+      <div class="historial-mes">
+        <span class="hm-periodo">${periodoLegible(h.periodo)}</span>
+        <span class="hm-monto" style="color:${color}">${h.estado === "Pagado" ? "$"+h.monto.toLocaleString() : "Adeudo"}</span>
+      </div>
+    `;
+  });
+  if (!filtrado.length){
+    html = `<div style="text-align:center; padding:16px; color:var(--azul-txt); font-size:13px;">Sin registros en este filtro.</div>`;
+  }
+  document.getElementById(idPrefix + '-historial-lista').innerHTML = html;
+}
+
 function calcularTotalesPorAnio(historial){
   const totales = {};
   historial.forEach(h => {
@@ -395,21 +440,12 @@ function verDetalle(unidad){
 
   html += construirSelectorPeriodo(u.historial, 'det');
 
-  html += '<div class="seccion-titulo">Historial completo</div><div class="card">';
-  u.historial.slice().reverse().forEach(h => {
-    const color = h.estado === "Pagado" ? "var(--verde)" : "var(--rojo)";
-    html += `
-      <div class="historial-mes">
-        <span class="hm-periodo">${periodoLegible(h.periodo)}</span>
-        <span class="hm-monto" style="color:${color}">${h.estado === "Pagado" ? "$"+h.monto.toLocaleString() : "Adeudo"}</span>
-      </div>
-    `;
-  });
-  html += '</div>';
+  html += construirFiltroHistorial('det');
 
   document.getElementById('detalle-content').innerHTML = html;
   ir('s-detalle');
   actualizarPeriodoSeleccionado('det');
+  filtrarHistorial('det', 'todos');
 }
 
 /* ── Login Propietario ── */
@@ -468,21 +504,12 @@ function mostrarPropietario(u){
 
   html += construirSelectorPeriodo(u.historial, 'prop');
 
-  html += '<div class="seccion-titulo">Historial completo</div><div class="card">';
-  u.historial.slice().reverse().forEach(h => {
-    const color = h.estado === "Pagado" ? "var(--verde)" : "var(--rojo)";
-    html += `
-      <div class="historial-mes">
-        <span class="hm-periodo">${periodoLegible(h.periodo)}</span>
-        <span class="hm-monto" style="color:${color}">${h.estado === "Pagado" ? "$"+h.monto.toLocaleString() : "Adeudo"}</span>
-      </div>
-    `;
-  });
-  html += '</div>';
+  html += construirFiltroHistorial('prop');
 
   document.getElementById('prop-content').innerHTML = html;
   ir('s-propietario');
   actualizarPeriodoSeleccionado('prop');
+  filtrarHistorial('prop', 'todos');
 }
 </script>
 
