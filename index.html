@@ -8,87 +8,107 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --gris-deep:   #F3F4F6;
-  --gris-mid:    #FAFAFB;
-  --plata:       #6B7280;
-  --plata-b:     rgba(107,114,128,.45);
-  --plata-glow:  rgba(107,114,128,.10);
-  --tinta:       #2B303B;
-  --tinta-soft:  rgba(43,48,59,.55);
-  --borde:       #E5E7EB;
-  --verde: #1E8E5A;   --verde-bg: #E7F5EE;
-  --rojo:  #C0392B;   --rojo-bg:  #FBEAE8;
-  --ambar: #B7791F;   --ambar-bg: #FBF2E3;
+  --cielo-deep:  #7FC7EE;   /* fondo base, azul cielo vibrante y alegre */
+  --cielo-vivo:  #57B2E8;   /* azul cielo más intenso para acentos/gradiente */
+  --cielo-mid:   #F0F8FD;   /* fondo de contenido, muy claro */
+  --cielo-line:  #CFE3F2;   /* bordes suaves con tinte azul */
+  --azul-txt:    #1E5C82;   /* azul marino para texto secundario */
+  --tinta:       #1B2733;   /* casi negro, para texto principal */
+  --gris-btn:    #5B6472;   /* gris ~10 tonos más fuerte que el fondo, para botones */
+  --gris-btn-d:  #454C58;   /* gris oscuro, hover/active de botones */
+  --dorado:      #B8933E;   /* dorado elegante, para detalles puntuales */
+  --dorado-soft: rgba(184,147,62,.12);
+  --dorado-b:    rgba(184,147,62,.4);
+  --verde: #2E7D5B;   --verde-bg: #E4F3EC;
+  --rojo:  #B0463A;   --rojo-bg:  #FBEAE7;
 }
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-body { font-family:'Segoe UI',Arial,sans-serif; background:var(--gris-deep); color:var(--tinta); min-height:100vh; }
+body { font-family:'Segoe UI',Arial,sans-serif; background:var(--cielo-deep); color:var(--tinta); min-height:100vh; }
 .hidden { display:none !important; }
 .screen { display:none; min-height:100vh; flex-direction:column; }
 .screen.active { display:flex; }
 
 /* INICIO */
-#s-inicio { background:var(--gris-deep); align-items:center; justify-content:center; padding:32px 24px; }
+#s-inicio {
+  background: radial-gradient(ellipse at 30% 0%, var(--cielo-deep) 0%, var(--cielo-vivo) 75%);
+  align-items:center; justify-content:center; padding:32px 24px;
+}
 .inicio-logo { text-align:center; margin-bottom:40px; }
-.inicio-logo .logo-img { width:96px; height:96px; border-radius:50%; border:2.5px solid var(--plata-b);
-  display:flex; align-items:center; justify-content:center; font-family:'Playfair Display',serif;
-  font-weight:700; font-size:26px; color:var(--plata); background:#fff; margin:0 auto 16px;
-  box-shadow:0 0 0 6px var(--plata-glow); }
-.inicio-logo h1 { font-family:'Playfair Display',serif; font-size:26px; font-weight:700; }
-.inicio-logo .sub { font-size:9px; color:var(--plata); letter-spacing:2.5px; text-transform:uppercase; font-weight:700; margin-top:5px; }
+.inicio-logo .logo-img {
+  width:100px; height:100px; border-radius:50%;
+  border:2.5px solid var(--dorado-b);
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Playfair Display',serif; font-weight:700; font-size:26px; color:var(--dorado);
+  background:#fff; margin:0 auto 18px; object-fit:cover;
+  box-shadow:0 0 0 7px rgba(255,255,255,.35), 0 8px 24px rgba(27,39,51,.15);
+}
+.inicio-logo h1 { font-family:'Playfair Display',serif; font-size:28px; font-weight:700; color:#fff; letter-spacing:.3px; text-shadow:0 2px 10px rgba(27,39,51,.15); }
+.inicio-logo .sub { font-size:9.5px; color:#FCEFC7; letter-spacing:2.8px; text-transform:uppercase; font-weight:700; margin-top:7px; }
+.inicio-logo .admin-txt { font-size:11px; color:#fff; margin-top:8px; letter-spacing:.3px; opacity:.85; }
 .inicio-btns { display:flex; flex-direction:column; gap:10px; width:100%; max-width:340px; }
-.btn-primary { background:var(--tinta); border:1.5px solid var(--tinta); color:#fff; border-radius:13px;
-  padding:15px; font-size:15px; font-weight:700; cursor:pointer; }
-.btn-primary:active { transform:scale(0.97); }
-.btn-secondary { background:#fff; border:1.5px solid var(--borde); color:var(--tinta); border-radius:13px;
-  padding:14px; font-size:15px; font-weight:700; cursor:pointer; }
-.btn-secondary:active { transform:scale(0.97); }
+.btn-primary {
+  background: var(--gris-btn);
+  border:1.5px solid var(--gris-btn-d); color:#fff; border-radius:13px;
+  padding:15px; font-size:15px; font-weight:700; cursor:pointer; letter-spacing:.4px;
+  box-shadow:0 4px 14px rgba(27,39,51,.18); }
+.btn-primary:active { transform:scale(0.97); background:var(--gris-btn-d); }
+.btn-secondary {
+  background: var(--gris-btn); border:1.5px solid var(--gris-btn-d); color:#fff; border-radius:13px;
+  padding:14px; font-size:15px; font-weight:700; cursor:pointer; letter-spacing:.3px; opacity:.92; }
+.btn-secondary:active { transform:scale(0.97); background:var(--gris-btn-d); }
 
 /* HEADER */
-.app-header { background:#fff; padding:14px 18px; display:flex; align-items:center; gap:12px; border-bottom:1px solid var(--borde); }
-.app-header .back { background:none; border:none; color:var(--plata); font-size:22px; cursor:pointer; padding:4px; }
-.app-header .header-title h1 { font-family:'Playfair Display',serif; font-size:17px; font-weight:700; }
-.app-header .header-title p { font-size:11px; color:var(--plata); margin-top:2px; }
+.app-header {
+  background:#fff; padding:14px 18px; display:flex; align-items:center; gap:12px;
+  border-bottom:1px solid var(--cielo-line); }
+.app-header .back { background:none; border:none; color:var(--dorado); font-size:22px; cursor:pointer; padding:4px; }
+.app-header .header-title h1 { font-family:'Playfair Display',serif; font-size:17px; font-weight:700; color:var(--tinta); }
+.app-header .header-title p { font-size:11px; color:var(--dorado); margin-top:2px; letter-spacing:.2px; font-weight:600; }
 
 /* CONTENT */
-.content { flex:1; padding:14px 16px; max-width:480px; width:100%; margin:0 auto; background:var(--gris-mid); }
+.content { flex:1; padding:14px 16px; max-width:480px; width:100%; margin:0 auto; background:var(--cielo-mid); }
 
-.card { background:#fff; border:1px solid var(--borde); border-radius:16px; padding:18px; box-shadow:0 2px 10px rgba(17,24,39,.04); margin-bottom:14px; }
-.card-title { font-size:15px; font-weight:700; margin-bottom:14px; }
+.card { background:#fff; border:1px solid var(--cielo-line); border-radius:16px; padding:18px;
+  box-shadow:0 3px 14px rgba(39,75,109,.05); margin-bottom:14px; }
+.card-title { font-size:15px; font-weight:700; color:var(--tinta); margin-bottom:14px; font-family:'Playfair Display',serif; }
 .fg { margin-bottom:14px; }
-.fg label { display:block; font-size:12px; color:var(--tinta-soft); margin-bottom:5px; font-weight:600; }
-.fg select { width:100%; padding:12px 14px; border:1.5px solid var(--borde); border-radius:10px; font-size:14px; background:var(--gris-mid); color:var(--tinta); }
+.fg label { display:block; font-size:12px; color:var(--azul-txt); margin-bottom:5px; font-weight:600; }
+.fg select { width:100%; padding:12px 14px; border:1.5px solid var(--cielo-line); border-radius:10px;
+  font-size:14px; background:var(--cielo-mid); color:var(--tinta); }
 
-.seccion-titulo { font-size:12px; font-weight:700; color:#9CA3AF; text-transform:uppercase; letter-spacing:.6px; margin:18px 0 10px; }
+.seccion-titulo { font-size:11.5px; font-weight:700; color:var(--azul-txt); text-transform:uppercase;
+  letter-spacing:.7px; margin:18px 0 10px; opacity:.75; }
 
 /* RESUMEN COMITÉ */
 .resumen-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:6px; }
-.resumen-box { background:#fff; border:1px solid var(--borde); border-radius:12px; padding:14px; text-align:center; }
-.resumen-box .rb-label { font-size:11px; color:var(--tinta-soft); margin-bottom:5px; }
-.resumen-box .rb-valor { font-size:20px; font-weight:700; }
+.resumen-box { background:#fff; border:1px solid var(--cielo-line); border-radius:12px; padding:14px; text-align:center; }
+.resumen-box .rb-label { font-size:11px; color:var(--azul-txt); margin-bottom:5px; }
+.resumen-box .rb-valor { font-size:21px; font-weight:700; font-family:'Playfair Display',serif; }
 .resumen-box.verde .rb-valor { color:var(--verde); }
 .resumen-box.rojo .rb-valor { color:var(--rojo); }
 
 /* Lista unidades */
-.unidad-row { background:#fff; border:1px solid var(--borde); border-radius:12px; padding:13px 16px;
-  margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; }
-.unidad-row:active { background:var(--gris-mid); }
-.unidad-nombre { font-size:14px; font-weight:700; }
-.unidad-edif { font-size:11.5px; color:#9CA3AF; }
-.badge { font-size:11px; font-weight:700; padding:4px 10px; border-radius:20px; }
+.unidad-row { background:#fff; border:1px solid var(--cielo-line); border-radius:12px; padding:13px 16px;
+  margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;
+  transition:border-color .15s; }
+.unidad-row:active { background:var(--cielo-mid); border-color:var(--dorado-b); }
+.unidad-nombre { font-size:14px; font-weight:700; color:var(--tinta); }
+.unidad-edif { font-size:11.5px; color:var(--azul-txt); opacity:.7; }
+.badge { font-size:11px; font-weight:700; padding:4px 11px; border-radius:20px; }
 .badge.Pagado { background:var(--verde-bg); color:var(--verde); }
 .badge.Adeudo { background:var(--rojo-bg); color:var(--rojo); }
-.badge.recargo { background:var(--ambar-bg); color:var(--ambar); }
 
 /* Historial */
-.historial-mes { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--gris-mid); }
+.historial-mes { display:flex; justify-content:space-between; align-items:center; padding:10px 0;
+  border-bottom:1px solid var(--cielo-mid); }
 .historial-mes:last-child { border-bottom:none; }
-.hm-periodo { font-size:13px; color:var(--tinta-soft); }
+.hm-periodo { font-size:13px; color:var(--azul-txt); }
 .hm-monto { font-size:13.5px; font-weight:700; }
 
-.loader { text-align:center; padding:40px 20px; color:var(--tinta-soft); font-size:13px; }
+.loader { text-align:center; padding:40px 20px; color:var(--azul-txt); font-size:13px; }
 .error-box { background:var(--rojo-bg); color:var(--rojo); border-radius:10px; padding:12px 14px; font-size:13px; margin-bottom:12px; }
 
-.footnote { text-align:center; font-size:11px; color:#9CA3AF; margin-top:20px; padding-bottom:20px; }
+.footnote { text-align:center; font-size:11px; color:var(--azul-txt); opacity:.55; margin-top:20px; padding-bottom:20px; }
 </style>
 </head>
 <body>
@@ -96,9 +116,10 @@ body { font-family:'Segoe UI',Arial,sans-serif; background:var(--gris-deep); col
 <!-- INICIO -->
 <div class="screen active" id="s-inicio">
   <div class="inicio-logo">
-    <div class="logo-img">CH</div>
+    <img class="logo-img" src="logochetumal.png" alt="Chetumal" onerror="this.onerror=null; this.outerHTML='<div class=&quot;logo-img&quot;>CH</div>';">
     <h1>App Chetumal</h1>
     <div class="sub">Finanzas de la privada</div>
+    <div class="admin-txt">MÚUCH' Administración Residencial</div>
   </div>
   <div class="inicio-btns">
     <button class="btn-primary" onclick="entrarComite()">Entrar como Comité</button>
@@ -106,7 +127,7 @@ body { font-family:'Segoe UI',Arial,sans-serif; background:var(--gris-deep); col
   </div>
 </div>
 
-<!-- SELECCIÓN DE DEPTO (simula login de propietario) -->
+<!-- SELECCIÓN DE DEPTO -->
 <div class="screen" id="s-select-depto">
   <div class="app-header">
     <button class="back" onclick="ir('s-inicio')">←</button>
@@ -120,7 +141,7 @@ body { font-family:'Segoe UI',Arial,sans-serif; background:var(--gris-deep); col
         <select id="select-unidad"></select>
       </div>
       <button class="btn-primary" style="width:100%;" onclick="entrarPropietario()">Ver mi estado de cuenta</button>
-      <div class="hint" style="font-size:11.5px;color:#9CA3AF;margin-top:8px;">* Esto simula el login — luego cada quien entrará con su contraseña asignada.</div>
+      <div class="hint" style="font-size:11.5px;color:var(--azul-txt);opacity:.7;margin-top:8px;">* Selector temporal — luego cada quien entrará con su contraseña asignada.</div>
     </div>
   </div>
 </div>
@@ -136,7 +157,7 @@ body { font-family:'Segoe UI',Arial,sans-serif; background:var(--gris-deep); col
   </div>
 </div>
 
-<!-- DETALLE DE UNIDAD (comité) -->
+<!-- DETALLE DE UNIDAD -->
 <div class="screen" id="s-detalle">
   <div class="app-header">
     <button class="back" onclick="ir('s-comite')">←</button>
@@ -155,7 +176,7 @@ body { font-family:'Segoe UI',Arial,sans-serif; background:var(--gris-deep); col
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbx6UkMVs3Rs-GCz0u1bMampL3zZlsVp0pwa8agZNBs064mPpdZT8JgTbFqA0F17euuP/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbyAmIiiocXYQRveMX0otzRi-EN7uxrvZrERFcjDmb-l6YaiAesvmVgyigN_wF7HN3My/exec";
 let dataUnidades = [];
 
 function ir(id){
@@ -216,7 +237,7 @@ function renderComite(data){
       <div class="unidad-row" onclick="verDetalle('${u.unidad}')">
         <div>
           <div class="unidad-nombre">${u.unidad}</div>
-          <div class="unidad-edif">Edificio ${u.edificio}${ult && ult.recargo ? ' · con recargo' : ''}</div>
+          <div class="unidad-edif">Edificio ${u.edificio}</div>
         </div>
         <span class="badge ${badgeClass}">${estado}</span>
       </div>
@@ -236,7 +257,7 @@ function verDetalle(unidad){
     const color = h.estado === "Pagado" ? "var(--verde)" : "var(--rojo)";
     html += `
       <div class="historial-mes">
-        <span class="hm-periodo">${periodoLegible(h.periodo)}${h.recargo ? ' (con recargo)' : ''}</span>
+        <span class="hm-periodo">${periodoLegible(h.periodo)}</span>
         <span class="hm-monto" style="color:${color}">${h.estado === "Pagado" ? "$"+h.monto.toLocaleString() : "Adeudo"}</span>
       </div>
     `;
@@ -270,8 +291,7 @@ function entrarPropietario(){
     html += `
       <div class="card" style="text-align:center;">
         <div class="card-title">Estado actual (${periodoLegible(ult.periodo)})</div>
-        <div style="font-size:26px;font-weight:800;color:${color};">${ult.estado === "Pagado" ? "Al corriente" : "Con adeudo"}</div>
-        ${ult.recargo ? '<div style="font-size:12px;color:var(--ambar);margin-top:6px;">Incluye recargo por atraso</div>' : ''}
+        <div style="font-size:26px;font-weight:800;color:${color};font-family:'Playfair Display',serif;">${ult.estado === "Pagado" ? "Al corriente" : "Con adeudo"}</div>
       </div>
     `;
   }
@@ -281,7 +301,7 @@ function entrarPropietario(){
     const color = h.estado === "Pagado" ? "var(--verde)" : "var(--rojo)";
     html += `
       <div class="historial-mes">
-        <span class="hm-periodo">${periodoLegible(h.periodo)}${h.recargo ? ' (con recargo)' : ''}</span>
+        <span class="hm-periodo">${periodoLegible(h.periodo)}</span>
         <span class="hm-monto" style="color:${color}">${h.estado === "Pagado" ? "$"+h.monto.toLocaleString() : "Adeudo"}</span>
       </div>
     `;
@@ -292,7 +312,6 @@ function entrarPropietario(){
   ir('s-propietario');
 }
 
-// Precarga el selector de unidades en cuanto se entra a esa pantalla
 document.addEventListener('DOMContentLoaded', () => {
   const btnPropietario = document.querySelector('button[onclick="ir(\'s-select-depto\')"]');
   if (btnPropietario){
@@ -301,7 +320,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
-<div class="footnote">MÚUCH' Administración Residencial · App Chetumal — conectado a datos reales</div>
+<div class="footnote">MÚUCH' Administración Residencial · App Chetumal</div>
 
 </body>
 </html>
