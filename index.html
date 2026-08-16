@@ -220,6 +220,112 @@ function ultimoEstado(historial){
   return historial[historial.length-1];
 }
 
+function construirSelectorPeriodo(historial, idPrefix){
+  const anios = [...new Set(historial.map(h => h.periodo.split("-")[0]))].sort();
+  const nombresMeses = ["01-Ene","02-Feb","03-Mar","04-Abr","05-May","06-Jun","07-Jul","08-Ago","09-Sep","10-Oct","11-Nov","12-Dic"];
+
+  let html = `
+    <div class="card">
+      <div class="card-title">Consultar un mes específico</div>
+      <div style="display:flex; gap:10px;">
+        <div class="fg" style="flex:1; margin-bottom:0;">
+          <label>Año</label>
+          <select id="${idPrefix}-sel-anio" onchange="actualizarPeriodoSeleccionado('${idPrefix}')">
+            ${anios.map(a => `<option value="${a}">${a}</option>`).join('')}
+          </select>
+        </div>
+        <div class="fg" style="flex:1; margin-bottom:0;">
+          <label>Mes</label>
+          <select id="${idPrefix}-sel-mes" onchange="actualizarPeriodoSeleccionado('${idPrefix}')">
+            ${nombresMeses.map(m => `<option value="${m.split('-')[0]}">${m.split('-')[1]}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div id="${idPrefix}-resultado" style="margin-top:16px;"></div>
+    </div>
+  `;
+  return html;
+}
+
+function actualizarPeriodoSeleccionado(idPrefix){
+  const historial = idPrefix.startsWith('det') ? dataComite.find(x => x.unidad === detalleActual).historial : dataUnidad.historial;
+  const anio = document.getElementById(idPrefix + '-sel-anio').value;
+  const mes = document.getElementById(idPrefix + '-sel-mes').value;
+  const periodoBuscado = anio + "-" + mes;
+  const registro = historial.find(h => h.periodo === periodoBuscado);
+  const box = document.getElementById(idPrefix + '-resultado');
+
+  if (!registro){
+    box.innerHTML = `<div style="text-align:center; padding:14px; color:var(--azul-txt); font-size:13px;">Sin información para este periodo (posiblemente aún no aplicaba para esta unidad).</div>`;
+    return;
+  }
+  const color = registro.estado === "Pagado" ? "var(--verde)" : "var(--rojo)";
+  box.innerHTML = `
+    <div style="text-align:center; padding:10px 0;">
+      <div style="font-size:12px; color:var(--azul-txt); margin-bottom:6px;">${periodoLegible(registro.periodo)}</div>
+      <div style="font-size:24px; font-weight:800; color:${color}; font-family:'Playfair Display',serif;">
+        ${registro.estado === "Pagado" ? "$" + registro.monto.toLocaleString() : "Adeudo"}
+      </div>
+    </div>
+  `;
+}
+
+let detalleActual = null;
+
+function calcularTotalesPorAnio(historial){
+  const totales = {};
+  historial.forEach(h => {
+    const anio = h.periodo.split("-")[0];
+    if (!totales[anio]) totales[anio] = 0;
+    if (h.estado === "Pagado") totales[anio] += h.monto;
+  });
+  return totales;
+}
+
+function construirResumenAnual(historial, idPrefix){
+  const totales = calcularTotalesPorAnio(historial);
+  const anios = Object.keys(totales).sort();
+
+  let html = `<div class="card"><div class="card-title">Total aportado por año</div>`;
+  anios.forEach(anio => {
+    html += `
+      <div class="unidad-row" style="cursor:pointer;" onclick="toggleDesgloseAnio('${idPrefix}','${anio}')">
+        <div class="unidad-nombre">${anio}</div>
+        <span class="badge Pagado">$${totales[anio].toLocaleString()}</span>
+      </div>
+      <div id="${idPrefix}-desglose-${anio}" class="hidden" style="margin:-4px 0 10px 0; padding:0 4px;"></div>
+    `;
+  });
+  html += `</div>`;
+  return html;
+}
+
+function toggleDesgloseAnio(idPrefix, anio){
+  const historial = idPrefix.startsWith('det') ? dataComite.find(x => x.unidad === detalleActual).historial : dataUnidad.historial;
+  const box = document.getElementById(idPrefix + '-desglose-' + anio);
+  const yaAbierto = !box.classList.contains('hidden');
+
+  if (yaAbierto){
+    box.classList.add('hidden');
+    box.innerHTML = '';
+    return;
+  }
+
+  const mesesAnio = historial.filter(h => h.periodo.startsWith(anio));
+  let html = '';
+  mesesAnio.forEach(h => {
+    const color = h.estado === "Pagado" ? "var(--verde)" : "var(--rojo)";
+    html += `
+      <div class="historial-mes">
+        <span class="hm-periodo">${periodoLegible(h.periodo)}</span>
+        <span class="hm-monto" style="color:${color}">${h.estado === "Pagado" ? "$"+h.monto.toLocaleString() : "Adeudo"}</span>
+      </div>
+    `;
+  });
+  box.innerHTML = html;
+  box.classList.remove('hidden');
+}
+
 /* ── Login Comité ── */
 async function entrarComite(){
   const clave = document.getElementById('input-clave-comite').value.trim();
@@ -282,9 +388,14 @@ function renderComite(data){
 function verDetalle(unidad){
   const u = dataComite.find(x => x.unidad === unidad);
   if (!u) return;
+  detalleActual = unidad;
   document.getElementById('detalle-titulo').textContent = u.unidad;
 
-  let html = '<div class="card"><div class="card-title">Historial de pagos</div>';
+  let html = construirResumenAnual(u.historial, 'det');
+
+  html += construirSelectorPeriodo(u.historial, 'det');
+
+  html += '<div class="seccion-titulo">Historial completo</div><div class="card">';
   u.historial.slice().reverse().forEach(h => {
     const color = h.estado === "Pagado" ? "var(--verde)" : "var(--rojo)";
     html += `
@@ -298,6 +409,7 @@ function verDetalle(unidad){
 
   document.getElementById('detalle-content').innerHTML = html;
   ir('s-detalle');
+  actualizarPeriodoSeleccionado('det');
 }
 
 /* ── Login Propietario ── */
@@ -346,13 +458,17 @@ function mostrarPropietario(u){
     const color = ult.estado === "Pagado" ? "var(--verde)" : "var(--rojo)";
     html += `
       <div class="card" style="text-align:center;">
-        <div class="card-title">Estado actual (${periodoLegible(ult.periodo)})</div>
+        <div class="card-title">Estado más reciente (${periodoLegible(ult.periodo)})</div>
         <div style="font-size:26px;font-weight:800;color:${color};font-family:'Playfair Display',serif;">${ult.estado === "Pagado" ? "Al corriente" : "Con adeudo"}</div>
       </div>
     `;
   }
 
-  html += '<div class="seccion-titulo">Historial</div><div class="card">';
+  html += construirResumenAnual(u.historial, 'prop');
+
+  html += construirSelectorPeriodo(u.historial, 'prop');
+
+  html += '<div class="seccion-titulo">Historial completo</div><div class="card">';
   u.historial.slice().reverse().forEach(h => {
     const color = h.estado === "Pagado" ? "var(--verde)" : "var(--rojo)";
     html += `
@@ -366,6 +482,7 @@ function mostrarPropietario(u){
 
   document.getElementById('prop-content').innerHTML = html;
   ir('s-propietario');
+  actualizarPeriodoSeleccionado('prop');
 }
 </script>
 
