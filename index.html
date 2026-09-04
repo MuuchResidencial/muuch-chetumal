@@ -129,6 +129,7 @@ body { font-family:'Segoe UI',Arial,sans-serif; background:var(--cielo-deep); co
   <div class="inicio-btns">
     <button class="btn-primary" onclick="ir('s-login-comite')">Entrar como Comité</button>
     <button class="btn-secondary" onclick="ir('s-select-depto')">Entrar como Propietario</button>
+    <button class="btn-secondary" onclick="ir('s-login-personal')">Entrar como Personal</button>
   </div>
 </div>
 
@@ -249,6 +250,63 @@ body { font-family:'Segoe UI',Arial,sans-serif; background:var(--cielo-deep); co
       <input type="text" id="buscar-clave-depto" placeholder="Buscar depto (ej. 4-A)" oninput="filtrarClavesPropietarios()" style="width:100%; padding:12px 14px; border:1.5px solid var(--cielo-line); border-radius:10px; font-size:14px; background:#fff; color:var(--tinta);">
     </div>
     <div id="lista-claves-propietarios"></div>
+  </div>
+</div>
+
+<!-- LOGIN PERSONAL -->
+<div class="screen" id="s-login-personal">
+  <div class="app-header">
+    <button class="back" onclick="ir('s-inicio')">←</button>
+    <div class="header-title"><h1>Personal</h1><p>Registrar actividad realizada</p></div>
+  </div>
+  <div class="content">
+    <div class="card">
+      <div class="card-title">Iniciar sesión</div>
+      <div class="fg">
+        <label>Nombre</label>
+        <input type="text" id="input-nombre-personal" placeholder="Tu nombre" style="width:100%; padding:12px 14px; border:1.5px solid var(--cielo-line); border-radius:10px; font-size:14px; background:var(--cielo-mid); color:var(--tinta);">
+      </div>
+      <div class="fg">
+        <label>Clave de acceso</label>
+        <input type="password" id="input-clave-personal" placeholder="••••" maxlength="4" inputmode="numeric" style="width:100%; padding:12px 14px; border:1.5px solid var(--cielo-line); border-radius:10px; font-size:14px; background:var(--cielo-mid); color:var(--tinta);">
+      </div>
+      <div id="personal-login-error" class="error-box hidden"></div>
+      <button class="btn-primary" style="width:100%;" onclick="entrarPersonal()">Entrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- REGISTRAR SERVICIO -->
+<div class="screen" id="s-registrar-servicio">
+  <div class="app-header">
+    <button class="back" onclick="ir('s-inicio')">←</button>
+    <div class="header-title"><h1 id="registrar-titulo">Registrar actividad</h1><p id="registrar-sub">Servicio</p></div>
+  </div>
+  <div class="content">
+    <div class="card">
+      <div class="card-title">Nueva actividad</div>
+
+      <div class="fg" id="fg-servicio-comite" class="hidden"></div>
+
+      <div class="fg">
+        <label>Foto de evidencia</label>
+        <div class="foto-upload" onclick="document.getElementById('input-foto-servicio').click();" style="border:2px dashed var(--cielo-line); border-radius:14px; padding:22px 16px; text-align:center; cursor:pointer; background:var(--cielo-mid);">
+          <span style="font-size:28px; display:block; margin-bottom:8px;">📷</span>
+          <div style="font-size:13px; font-weight:600; color:var(--tinta);" id="texto-foto-servicio">Tomar foto o subir imagen</div>
+        </div>
+        <input type="file" id="input-foto-servicio" accept="image/*" capture="environment" class="hidden" onchange="previsualizarFoto()">
+        <img id="preview-foto-servicio" class="hidden" style="width:100%; border-radius:12px; margin-top:10px; border:1px solid var(--cielo-line);">
+      </div>
+
+      <div class="fg">
+        <label>Descripción de lo realizado</label>
+        <textarea id="input-descripcion-servicio" placeholder="Ej. Limpieza de filtro y ajuste de cloro" style="width:100%; min-height:80px; padding:12px 14px; border:1.5px solid var(--cielo-line); border-radius:10px; font-size:14px; background:var(--cielo-mid); color:var(--tinta); font-family:inherit;"></textarea>
+      </div>
+
+      <div id="registrar-servicio-error" class="error-box hidden"></div>
+      <div id="registrar-servicio-exito" class="msg ok"></div>
+      <button class="btn-primary" style="width:100%;" onclick="enviarRegistroServicio()" id="btn-enviar-servicio">Guardar registro</button>
+    </div>
   </div>
 </div>
 
@@ -502,25 +560,60 @@ function renderComite(data){
 }
 
 function renderListaUnidadesComite(data){
-  let html = '';
+  const grupos = {};
   data.forEach(u => {
-    const ult = ultimoEstado(u.historial);
-    const estado = ult ? ult.estado : "—";
-    const badgeClass = estado === "Pagado" ? "Pagado" : "Adeudo";
-    html += `
-      <div class="unidad-row" onclick="verDetalle('${u.unidad}')">
-        <div>
+    if (!grupos[u.edificio]) grupos[u.edificio] = [];
+    grupos[u.edificio].push(u);
+  });
+  const edificios = Object.keys(grupos).sort((a,b) => Number(a) - Number(b));
+
+  let html = '';
+  if (!edificios.length){
+    html = `<div style="text-align:center; padding:16px; color:var(--azul-txt); font-size:13px;">Sin unidades en este filtro.</div>`;
+  }
+
+  edificios.forEach(ed => {
+    const unidades = grupos[ed];
+    const pagados = unidades.filter(u => { const ult = ultimoEstado(u.historial); return ult && ult.estado === "Pagado"; }).length;
+    const total = unidades.length;
+    const filas = unidades.map((u, i) => {
+      const ult = ultimoEstado(u.historial);
+      const estado = ult ? ult.estado : "—";
+      const badgeClass = estado === "Pagado" ? "Pagado" : "Adeudo";
+      const ultimaFila = i === unidades.length - 1;
+      return `
+        <div class="unidad-row" style="border-radius:0; border:none; ${ultimaFila ? '' : 'border-bottom:1px solid var(--cielo-mid);'} margin-bottom:0; padding:12px 16px;" onclick="verDetalle('${u.unidad}')">
           <div class="unidad-nombre">${u.unidad}</div>
-          <div class="unidad-edif">Edificio ${u.edificio}</div>
+          <span class="badge ${badgeClass}">${estado}</span>
         </div>
-        <span class="badge ${badgeClass}">${estado}</span>
+      `;
+    }).join('');
+
+    html += `
+      <div class="card" style="padding:0; overflow:hidden; margin-bottom:10px;">
+        <div style="padding:14px 16px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="toggleEdificio('${ed}')">
+          <div>
+            <div style="font-family:'Playfair Display',serif; font-size:15px; font-weight:700; color:var(--tinta);">Edificio ${ed}</div>
+            <div style="font-size:11.5px; color:var(--azul-txt); opacity:.75; margin-top:2px;">${pagados}/${total} al corriente</div>
+          </div>
+          <div id="edificio-${ed}-chevron" style="font-size:15px; color:var(--dorado); font-weight:700;">▾</div>
+        </div>
+        <div id="edificio-${ed}-body" class="hidden" style="border-top:1px solid var(--cielo-line);">
+          ${filas}
+        </div>
       </div>
     `;
   });
-  if (!data.length){
-    html = `<div style="text-align:center; padding:16px; color:var(--azul-txt); font-size:13px;">Sin unidades en este filtro.</div>`;
-  }
+
   document.getElementById('lista-unidades-comite').innerHTML = html;
+}
+
+function toggleEdificio(ed){
+  const body = document.getElementById('edificio-' + ed + '-body');
+  const chevron = document.getElementById('edificio-' + ed + '-chevron');
+  const abierto = !body.classList.contains('hidden');
+  if (abierto){ body.classList.add('hidden'); chevron.textContent = '▾'; }
+  else { body.classList.remove('hidden'); chevron.textContent = '▴'; }
 }
 
 function filtrarListaComite(filtro){
@@ -711,6 +804,132 @@ function filtrarClavesPropietarios(){
   const texto = document.getElementById('buscar-clave-depto').value.trim().toLowerCase();
   const filtrado = clavesPropietariosCache.filter(u => u.unidad.toLowerCase().includes(texto));
   renderClavesPropietarios(filtrado);
+}
+
+/* ── Login Personal + Registrar actividad ── */
+let credPersonal = { nombre: "", clave: "", rol: "" };
+let fotoBase64Servicio = null;
+
+async function entrarPersonal(){
+  const nombre = document.getElementById('input-nombre-personal').value.trim();
+  const clave = document.getElementById('input-clave-personal').value.trim();
+  const errBox = document.getElementById('personal-login-error');
+  errBox.classList.add('hidden');
+
+  if (!nombre || !clave){ errBox.textContent = "Ingresa tu nombre y clave."; errBox.classList.remove('hidden'); return; }
+
+  try {
+    const res = await fetch(API_URL + "?accion=loginPersonal&nombre=" + encodeURIComponent(nombre) + "&clave=" + encodeURIComponent(clave));
+    const data = await res.json();
+    if (!data.valido){
+      errBox.textContent = data.error || "Nombre o clave incorrectos.";
+      errBox.classList.remove('hidden');
+      return;
+    }
+    credPersonal = { nombre: data.nombre, clave, rol: data.rol };
+    abrirRegistrarServicio();
+  } catch(err){
+    errBox.textContent = "No se pudo conectar con el servidor.";
+    errBox.classList.remove('hidden');
+  }
+}
+
+function abrirRegistrarServicio(){
+  document.getElementById('registrar-titulo').textContent = "Hola, " + credPersonal.nombre;
+  document.getElementById('registrar-sub').textContent = credPersonal.rol === "Comité" ? "Registro de servicios" : credPersonal.rol;
+
+  const fgServicio = document.getElementById('fg-servicio-comite');
+  if (credPersonal.rol === "Comité"){
+    fgServicio.classList.remove('hidden');
+    fgServicio.innerHTML = `
+      <label>Servicio</label>
+      <select id="select-servicio-comite" style="width:100%; padding:12px 14px; border:1.5px solid var(--cielo-line); border-radius:10px; font-size:14px; background:var(--cielo-mid); color:var(--tinta);">
+        <option value="Piscina">Piscina</option>
+        <option value="Áreas comunes">Áreas comunes</option>
+        <option value="Jardinería">Jardinería</option>
+        <option value="Pintura">Pintura</option>
+      </select>
+    `;
+  } else {
+    fgServicio.classList.add('hidden');
+    fgServicio.innerHTML = '';
+  }
+
+  document.getElementById('input-foto-servicio').value = '';
+  document.getElementById('preview-foto-servicio').classList.add('hidden');
+  document.getElementById('texto-foto-servicio').textContent = "Tomar foto o subir imagen";
+  document.getElementById('input-descripcion-servicio').value = '';
+  document.getElementById('registrar-servicio-error').classList.add('hidden');
+  document.getElementById('registrar-servicio-exito').classList.remove('show');
+  fotoBase64Servicio = null;
+
+  ir('s-registrar-servicio');
+}
+
+function previsualizarFoto(){
+  const input = document.getElementById('input-foto-servicio');
+  if (!input.files || !input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    fotoBase64Servicio = e.target.result;
+    const img = document.getElementById('preview-foto-servicio');
+    img.src = fotoBase64Servicio;
+    img.classList.remove('hidden');
+    document.getElementById('texto-foto-servicio').textContent = "Foto lista — toca para cambiarla";
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+async function enviarRegistroServicio(){
+  const errBox = document.getElementById('registrar-servicio-error');
+  const exitoBox = document.getElementById('registrar-servicio-exito');
+  errBox.classList.add('hidden');
+  exitoBox.classList.remove('show');
+
+  const descripcion = document.getElementById('input-descripcion-servicio').value.trim();
+  const servicio = credPersonal.rol === "Comité"
+    ? document.getElementById('select-servicio-comite').value
+    : credPersonal.rol;
+
+  if (!fotoBase64Servicio){ errBox.textContent = "Toma o sube una foto de evidencia."; errBox.classList.remove('hidden'); return; }
+  if (!descripcion){ errBox.textContent = "Describe la actividad realizada."; errBox.classList.remove('hidden'); return; }
+
+  const btn = document.getElementById('btn-enviar-servicio');
+  btn.disabled = true;
+  btn.textContent = "Guardando…";
+
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        accion: "registrarBitacora",
+        nombre: credPersonal.nombre,
+        clave: credPersonal.clave,
+        servicio: servicio,
+        descripcion: descripcion,
+        foto: fotoBase64Servicio
+      })
+    });
+    const data = await res.json();
+    if (data.error){
+      errBox.textContent = data.error;
+      errBox.classList.remove('hidden');
+    } else {
+      exitoBox.textContent = "Actividad registrada correctamente.";
+      exitoBox.classList.add('show');
+      document.getElementById('input-foto-servicio').value = '';
+      document.getElementById('preview-foto-servicio').classList.add('hidden');
+      document.getElementById('texto-foto-servicio').textContent = "Tomar foto o subir imagen";
+      document.getElementById('input-descripcion-servicio').value = '';
+      fotoBase64Servicio = null;
+    }
+  } catch(err){
+    errBox.textContent = "No se pudo conectar con el servidor.";
+    errBox.classList.remove('hidden');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Guardar registro";
+  }
 }
 </script>
 
