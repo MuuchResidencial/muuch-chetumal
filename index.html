@@ -165,8 +165,12 @@ body { font-family:'Segoe UI',Arial,sans-serif; background:var(--cielo-deep); co
     <div class="card">
       <div class="card-title">Iniciar sesión</div>
       <div class="fg">
+        <label>Nombre</label>
+        <input type="text" id="input-nombre-comite" placeholder="Tu nombre" style="width:100%; padding:12px 14px; border:1.5px solid var(--cielo-line); border-radius:10px; font-size:14px; background:var(--cielo-mid); color:var(--tinta);">
+      </div>
+      <div class="fg">
         <label>Clave de acceso</label>
-        <input type="password" id="input-clave-comite" placeholder="Clave del comité" style="width:100%; padding:12px 14px; border:1.5px solid var(--cielo-line); border-radius:10px; font-size:14px; background:var(--cielo-mid); color:var(--tinta);">
+        <input type="password" id="input-clave-comite" placeholder="Clave personal" style="width:100%; padding:12px 14px; border:1.5px solid var(--cielo-line); border-radius:10px; font-size:14px; background:var(--cielo-mid); color:var(--tinta);">
       </div>
       <div id="comite-login-error" class="error-box hidden"></div>
       <button class="btn-primary" style="width:100%;" onclick="entrarComite()">Entrar</button>
@@ -203,10 +207,56 @@ body { font-family:'Segoe UI',Arial,sans-serif; background:var(--cielo-deep); co
   <div class="content" id="prop-content"></div>
 </div>
 
+<!-- AGREGAR PERSONAL -->
+<div class="screen" id="s-agregar-personal">
+  <div class="app-header">
+    <button class="back" onclick="ir('s-comite')">←</button>
+    <div class="header-title"><h1>Agregar personal</h1><p>Genera su clave de acceso</p></div>
+  </div>
+  <div class="content">
+    <div class="card">
+      <div class="card-title">Nuevo trabajador</div>
+      <div class="fg">
+        <label>Nombre completo</label>
+        <input type="text" id="input-nuevo-nombre" placeholder="Nombre del trabajador" style="width:100%; padding:12px 14px; border:1.5px solid var(--cielo-line); border-radius:10px; font-size:14px; background:var(--cielo-mid); color:var(--tinta);">
+      </div>
+      <div class="fg">
+        <label>Servicio asignado</label>
+        <select id="select-nuevo-rol" style="width:100%; padding:12px 14px; border:1.5px solid var(--cielo-line); border-radius:10px; font-size:14px; background:var(--cielo-mid); color:var(--tinta);">
+          <option value="Piscina">Piscina</option>
+          <option value="Áreas comunes">Áreas comunes</option>
+          <option value="Jardinería">Jardinería</option>
+          <option value="Pintura">Pintura</option>
+        </select>
+      </div>
+      <div id="agregar-personal-error" class="error-box hidden"></div>
+      <div id="agregar-personal-exito" class="msg ok"></div>
+      <button class="btn-primary" style="width:100%;" onclick="agregarPersonal()">Registrar y generar clave</button>
+    </div>
+    <div class="seccion-titulo">Personal registrado</div>
+    <div id="lista-personal-existente"></div>
+  </div>
+</div>
+
+<!-- VER CLAVES DE PROPIETARIOS -->
+<div class="screen" id="s-claves-propietarios">
+  <div class="app-header">
+    <button class="back" onclick="ir('s-comite')">←</button>
+    <div class="header-title"><h1>Claves de propietarios</h1><p>Repártelas con cada depto</p></div>
+  </div>
+  <div class="content">
+    <div class="fg" style="margin-bottom:14px;">
+      <input type="text" id="buscar-clave-depto" placeholder="Buscar depto (ej. 4-A)" oninput="filtrarClavesPropietarios()" style="width:100%; padding:12px 14px; border:1.5px solid var(--cielo-line); border-radius:10px; font-size:14px; background:#fff; color:var(--tinta);">
+    </div>
+    <div id="lista-claves-propietarios"></div>
+  </div>
+</div>
+
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbxw6cDKZrizVQep7CsA9cexstQfrSwKkqKQ-PI58bM11-IA-AWU4BnsGNjS2OFgJOM/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbxjH6hGZBjlQbUCp1DDt6HCse7HAq_s_hy2gXenYluW-g71NTY1vRFdKdJcLKIDC7Uk/exec";
 let dataUnidad = null;   // datos de UN solo propietario logueado
 let dataComite = null;   // datos completos, solo tras login válido del comité
+let credComite = { nombre: "", clave: "" }; // credenciales guardadas tras login, para reusar en otras pantallas
 
 function ir(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
@@ -388,20 +438,22 @@ function toggleDesgloseAnio(idPrefix, anio){
 
 /* ── Login Comité ── */
 async function entrarComite(){
+  const nombre = document.getElementById('input-nombre-comite').value.trim();
   const clave = document.getElementById('input-clave-comite').value.trim();
   const errBox = document.getElementById('comite-login-error');
   errBox.classList.add('hidden');
 
-  if (!clave){ errBox.textContent = "Ingresa la clave."; errBox.classList.remove('hidden'); return; }
+  if (!nombre || !clave){ errBox.textContent = "Ingresa tu nombre y clave."; errBox.classList.remove('hidden'); return; }
 
   try {
-    const res = await fetch(API_URL + "?accion=loginComite&clave=" + encodeURIComponent(clave));
+    const res = await fetch(API_URL + "?accion=panelComite&nombre=" + encodeURIComponent(nombre) + "&clave=" + encodeURIComponent(clave));
     const data = await res.json();
     if (data.error){
-      errBox.textContent = "Clave incorrecta.";
+      errBox.textContent = data.error === "Sin permiso" ? "No tienes permiso de Comité." : "Nombre o clave incorrectos.";
       errBox.classList.remove('hidden');
       return;
     }
+    credComite = { nombre, clave };
     dataComite = data;
     ir('s-comite');
     document.getElementById('comite-sub').textContent = data.length + " unidades registradas";
@@ -420,6 +472,16 @@ function renderComite(data){
   });
 
   let html = `
+    <div style="display:flex; gap:10px; margin-bottom:14px;">
+      <div class="card" style="flex:1; text-align:center; cursor:pointer; padding:14px 8px;" onclick="irAgregarPersonal()">
+        <div style="font-size:22px;">👷</div>
+        <div style="font-size:11.5px; font-weight:700; margin-top:4px;">Agregar personal</div>
+      </div>
+      <div class="card" style="flex:1; text-align:center; cursor:pointer; padding:14px 8px;" onclick="irClavesPropietarios()">
+        <div style="font-size:22px;">🔑</div>
+        <div style="font-size:11.5px; font-weight:700; margin-top:4px;">Claves de deptos</div>
+      </div>
+    </div>
     <div class="resumen-grid">
       <div class="resumen-box verde" style="cursor:pointer;" id="btn-filtro-corriente" onclick="filtrarListaComite('corriente')">
         <div class="rb-label">Al corriente</div><div class="rb-valor">${pagados}</div>
@@ -551,6 +613,104 @@ function mostrarPropietario(u){
   document.getElementById('prop-content').innerHTML = html;
   ir('s-propietario');
   filtrarHistorial('prop', 'todos');
+}
+
+/* ── Agregar personal ── */
+async function irAgregarPersonal(){
+  ir('s-agregar-personal');
+  document.getElementById('agregar-personal-exito').classList.remove('show');
+  document.getElementById('agregar-personal-error').classList.add('hidden');
+  try {
+    const res = await fetch(API_URL + "?accion=listaPersonal&nombre=" + encodeURIComponent(credComite.nombre) + "&clave=" + encodeURIComponent(credComite.clave));
+    const data = await res.json();
+    const cont = document.getElementById('lista-personal-existente');
+    if (data.error){ cont.innerHTML = '<div class="error-box">No se pudo cargar el personal.</div>'; return; }
+    let html = '';
+    data.forEach(p => {
+      html += `
+        <div class="unidad-row">
+          <div>
+            <div class="unidad-nombre">${p.nombre}</div>
+            <div class="unidad-edif">${p.rol}${p.estatus !== "Activo" ? " · Inactivo" : ""}</div>
+          </div>
+          <span class="badge Pagado">${p.clave}</span>
+        </div>
+      `;
+    });
+    cont.innerHTML = html || '<div style="text-align:center;color:var(--azul-txt);font-size:13px;">Aún no hay personal registrado.</div>';
+  } catch(err){
+    document.getElementById('lista-personal-existente').innerHTML = '<div class="error-box">Error de conexión.</div>';
+  }
+}
+
+async function agregarPersonal(){
+  const nuevoNombre = document.getElementById('input-nuevo-nombre').value.trim();
+  const nuevoRol = document.getElementById('select-nuevo-rol').value;
+  const errBox = document.getElementById('agregar-personal-error');
+  const exitoBox = document.getElementById('agregar-personal-exito');
+  errBox.classList.add('hidden');
+  exitoBox.classList.remove('show');
+
+  if (!nuevoNombre){ errBox.textContent = "Escribe el nombre del trabajador."; errBox.classList.remove('hidden'); return; }
+
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify({ accion: "agregarPersonal", nombre: credComite.nombre, clave: credComite.clave, nuevoNombre, nuevoRol })
+    });
+    const data = await res.json();
+    if (data.error){
+      errBox.textContent = data.error;
+      errBox.classList.remove('hidden');
+      return;
+    }
+    exitoBox.textContent = `Registrado: ${data.nombre} (${data.rol}) — su clave es ${data.clave}`;
+    exitoBox.classList.add('show');
+    document.getElementById('input-nuevo-nombre').value = '';
+    irAgregarPersonal();
+  } catch(err){
+    errBox.textContent = "No se pudo conectar con el servidor.";
+    errBox.classList.remove('hidden');
+  }
+}
+
+/* ── Ver claves de propietarios ── */
+let clavesPropietariosCache = [];
+
+async function irClavesPropietarios(){
+  ir('s-claves-propietarios');
+  document.getElementById('buscar-clave-depto').value = '';
+  try {
+    const res = await fetch(API_URL + "?accion=clavesPropietarios&nombre=" + encodeURIComponent(credComite.nombre) + "&clave=" + encodeURIComponent(credComite.clave));
+    const data = await res.json();
+    if (data.error){
+      document.getElementById('lista-claves-propietarios').innerHTML = '<div class="error-box">No se pudo cargar la información.</div>';
+      return;
+    }
+    clavesPropietariosCache = data;
+    renderClavesPropietarios(data);
+  } catch(err){
+    document.getElementById('lista-claves-propietarios').innerHTML = '<div class="error-box">Error de conexión.</div>';
+  }
+}
+
+function renderClavesPropietarios(data){
+  let html = '';
+  data.forEach(u => {
+    html += `
+      <div class="unidad-row">
+        <div class="unidad-nombre">${u.unidad}</div>
+        <span class="badge Pagado">${u.clave || "Sin asignar"}</span>
+      </div>
+    `;
+  });
+  document.getElementById('lista-claves-propietarios').innerHTML = html || '<div style="text-align:center;color:var(--azul-txt);font-size:13px;">Sin resultados.</div>';
+}
+
+function filtrarClavesPropietarios(){
+  const texto = document.getElementById('buscar-clave-depto').value.trim().toLowerCase();
+  const filtrado = clavesPropietariosCache.filter(u => u.unidad.toLowerCase().includes(texto));
+  renderClavesPropietarios(filtrado);
 }
 </script>
 
