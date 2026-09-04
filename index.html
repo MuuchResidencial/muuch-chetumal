@@ -19,6 +19,9 @@
   --dorado:      #B8933E;   /* dorado elegante, para detalles puntuales */
   --dorado-soft: rgba(184,147,62,.12);
   --dorado-b:    rgba(184,147,62,.4);
+  --dorado-claro: #F0D48A;  /* dorado brillante, para botones interactivos */
+  --dorado-med:   #D9AE52;  /* dorado medio, cuerpo del gradiente */
+  --dorado-hover: #C79A3B;  /* dorado oscuro, estado presionado */
   --verde: #2E7D5B;   --verde-bg: #E4F3EC;
   --rojo:  #B0463A;   --rojo-bg:  #FBEAE7;
 }
@@ -47,15 +50,17 @@ body { font-family:'Segoe UI',Arial,sans-serif; background:var(--cielo-deep); co
 .inicio-logo .admin-txt { font-size:11px; color:#fff; margin-top:8px; letter-spacing:.3px; opacity:.85; }
 .inicio-btns { display:flex; flex-direction:column; gap:10px; width:100%; max-width:340px; }
 .btn-primary {
-  background: var(--gris-btn);
-  border:1.5px solid var(--gris-btn-d); color:#fff; border-radius:13px;
+  background: linear-gradient(135deg, var(--dorado-claro), var(--dorado-med));
+  border:1.5px solid var(--dorado-hover); color:var(--tinta); border-radius:13px;
   padding:15px; font-size:15px; font-weight:700; cursor:pointer; letter-spacing:.4px;
-  box-shadow:0 4px 14px rgba(27,39,51,.18); }
-.btn-primary:active { transform:scale(0.97); background:var(--gris-btn-d); }
+  box-shadow:0 4px 16px rgba(184,147,62,.35); }
+.btn-primary:active { transform:scale(0.97); background:var(--dorado-hover); }
 .btn-secondary {
-  background: var(--gris-btn); border:1.5px solid var(--gris-btn-d); color:#fff; border-radius:13px;
-  padding:14px; font-size:15px; font-weight:700; cursor:pointer; letter-spacing:.3px; opacity:.92; }
-.btn-secondary:active { transform:scale(0.97); background:var(--gris-btn-d); }
+  background: linear-gradient(135deg, var(--dorado-claro), var(--dorado-med));
+  border:1.5px solid var(--dorado-hover); color:var(--tinta); border-radius:13px;
+  padding:14px; font-size:15px; font-weight:700; cursor:pointer; letter-spacing:.3px;
+  box-shadow:0 4px 16px rgba(184,147,62,.35); }
+.btn-secondary:active { transform:scale(0.97); background:var(--dorado-hover); }
 
 /* HEADER */
 .app-header {
@@ -113,7 +118,7 @@ body { font-family:'Segoe UI',Arial,sans-serif; background:var(--cielo-deep); co
 /* Filtro de historial (grande y simple) */
 .filtro-btn { flex:1; padding:13px 8px; border-radius:11px; border:1.5px solid var(--cielo-line);
   background:#fff; font-size:13.5px; font-weight:700; color:var(--azul-txt); cursor:pointer; }
-.filtro-btn.active { background:var(--gris-btn); color:#fff; border-color:var(--gris-btn-d); }
+.filtro-btn.active { background:linear-gradient(135deg, var(--dorado-claro), var(--dorado-med)); color:var(--tinta); border-color:var(--dorado-hover); }
 </style>
 </head>
 <body>
