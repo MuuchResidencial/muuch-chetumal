@@ -258,6 +258,24 @@ body { font-family:'Segoe UI',Arial,sans-serif; background:var(--cielo-deep); co
   </div>
 </div>
 
+<!-- BITÁCORA (COMITÉ) -->
+<div class="screen" id="s-bitacora-comite">
+  <div class="app-header">
+    <button class="back" onclick="ir('s-comite')">←</button>
+    <div class="header-title"><h1>Bitácora de servicios</h1><p>Actividades registradas</p></div>
+  </div>
+  <div class="content">
+    <div style="display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap;">
+      <button class="filtro-btn active" id="com-bit-todos" onclick="filtrarBitacoraComite('Todos')">Todos</button>
+      <button class="filtro-btn" id="com-bit-piscina" onclick="filtrarBitacoraComite('Piscina')">Piscina</button>
+      <button class="filtro-btn" id="com-bit-areas" onclick="filtrarBitacoraComite('Áreas comunes')">Áreas</button>
+      <button class="filtro-btn" id="com-bit-jardin" onclick="filtrarBitacoraComite('Jardinería')">Jardín</button>
+      <button class="filtro-btn" id="com-bit-pintura" onclick="filtrarBitacoraComite('Pintura')">Pintura</button>
+    </div>
+    <div id="comite-bitacora-lista"><div class="loader">Cargando…</div></div>
+  </div>
+</div>
+
 <!-- LOGIN PERSONAL -->
 <div class="screen" id="s-login-personal">
   <div class="app-header">
@@ -333,7 +351,7 @@ body { font-family:'Segoe UI',Arial,sans-serif; background:var(--cielo-deep); co
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbzU9vHRf2xGdccCFcWWNfn5Im0YQ4w80v99d-QRUgsQxC16zfHVgzVr_8FWONx3zJpB/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzONaHkzh_xUkA5kIq-z8_dEx62LmmCav0_1byKpXnsSARwZjZo5XDWbHOpu7oQkihF/exec";
 let dataUnidad = null;   // datos de UN solo propietario logueado
 let dataComite = null;   // datos completos, solo tras login válido del comité
 let credComite = { nombre: "", clave: "" }; // credenciales guardadas tras login, para reusar en otras pantallas
@@ -553,14 +571,18 @@ function renderComite(data){
   });
 
   let html = `
-    <div style="display:flex; gap:10px; margin-bottom:14px;">
-      <div class="card" style="flex:1; text-align:center; cursor:pointer; padding:14px 8px;" onclick="irAgregarPersonal()">
-        <div style="font-size:22px;">👷</div>
-        <div style="font-size:11.5px; font-weight:700; margin-top:4px;">Agregar personal</div>
+    <div style="display:flex; gap:8px; margin-bottom:14px;">
+      <div class="card" style="flex:1; text-align:center; cursor:pointer; padding:14px 6px;" onclick="irAgregarPersonal()">
+        <div style="font-size:20px;">👷</div>
+        <div style="font-size:10.5px; font-weight:700; margin-top:4px;">Agregar personal</div>
       </div>
-      <div class="card" style="flex:1; text-align:center; cursor:pointer; padding:14px 8px;" onclick="irClavesPropietarios()">
-        <div style="font-size:22px;">🔑</div>
-        <div style="font-size:11.5px; font-weight:700; margin-top:4px;">Claves de deptos</div>
+      <div class="card" style="flex:1; text-align:center; cursor:pointer; padding:14px 6px;" onclick="irClavesPropietarios()">
+        <div style="font-size:20px;">🔑</div>
+        <div style="font-size:10.5px; font-weight:700; margin-top:4px;">Claves de deptos</div>
+      </div>
+      <div class="card" style="flex:1; text-align:center; cursor:pointer; padding:14px 6px;" onclick="irBitacoraComite()">
+        <div style="font-size:20px;">🧾</div>
+        <div style="font-size:10.5px; font-weight:700; margin-top:4px;">Bitácora</div>
       </div>
     </div>
     <div class="resumen-grid">
@@ -804,6 +826,18 @@ function mostrarPropietario(u){
 
   html += construirFiltroHistorial('prop');
 
+  html += `
+    <div class="seccion-titulo">Bitácora de servicios</div>
+    <div style="display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap;">
+      <button class="filtro-btn active" id="prop-bit-todos" onclick="filtrarBitacoraProp('Todos')">Todos</button>
+      <button class="filtro-btn" id="prop-bit-piscina" onclick="filtrarBitacoraProp('Piscina')">Piscina</button>
+      <button class="filtro-btn" id="prop-bit-areas" onclick="filtrarBitacoraProp('Áreas comunes')">Áreas</button>
+      <button class="filtro-btn" id="prop-bit-jardin" onclick="filtrarBitacoraProp('Jardinería')">Jardín</button>
+      <button class="filtro-btn" id="prop-bit-pintura" onclick="filtrarBitacoraProp('Pintura')">Pintura</button>
+    </div>
+    <div id="prop-bitacora-lista"><div class="loader">Cargando…</div></div>
+  `;
+
   if (sesionUnidad.tipo === "usuario"){
     html += construirEdicionApodo();
   } else if (sesionUnidad.tipo === "titular"){
@@ -813,6 +847,7 @@ function mostrarPropietario(u){
   document.getElementById('prop-content').innerHTML = html;
   ir('s-propietario');
   filtrarHistorial('prop', 'todos');
+  filtrarBitacoraProp('Todos');
 
   if (sesionUnidad.tipo === "titular"){
     cargarGestionUsuarios();
@@ -1158,6 +1193,66 @@ async function aplicarBrandingPrivada(){
     }
   } catch(err){
     // si falla, la app sigue con el nombre por defecto del HTML
+  }
+}
+
+/* ── Bitácora de servicios: render compartido + carga por rol ── */
+function renderBitacoraLista(data, contId){
+  let html = '';
+  data.forEach(b => {
+    html += `
+      <div class="card" style="padding:14px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;">
+          <div style="font-weight:700; font-size:13.5px;">${b.servicio}</div>
+          <div style="font-size:11px; color:var(--azul-txt);">${b.fecha}</div>
+        </div>
+        <div style="font-size:12.5px; color:var(--tinta); margin-bottom:8px;">${b.descripcion}</div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div style="font-size:11px; color:var(--azul-txt); opacity:.75;">Registró: ${b.responsable}</div>
+          ${b.foto ? `<a href="${b.foto}" target="_blank" style="font-size:11.5px; font-weight:700; color:var(--dorado);">Ver foto →</a>` : ''}
+        </div>
+      </div>
+    `;
+  });
+  document.getElementById(contId).innerHTML = html || '<div style="text-align:center;color:var(--azul-txt);font-size:13px;">Sin registros aún.</div>';
+}
+
+async function filtrarBitacoraProp(servicio){
+  document.getElementById('prop-bit-todos').classList.toggle('active', servicio === 'Todos');
+  document.getElementById('prop-bit-piscina').classList.toggle('active', servicio === 'Piscina');
+  document.getElementById('prop-bit-areas').classList.toggle('active', servicio === 'Áreas comunes');
+  document.getElementById('prop-bit-jardin').classList.toggle('active', servicio === 'Jardinería');
+  document.getElementById('prop-bit-pintura').classList.toggle('active', servicio === 'Pintura');
+
+  try {
+    const res = await fetch(API_URL + "?accion=bitacoraPropietario&unidad=" + encodeURIComponent(sesionUnidad.unidad) + "&clave=" + encodeURIComponent(sesionUnidad.clave) + "&servicio=" + encodeURIComponent(servicio));
+    const data = await res.json();
+    if (data.error){ document.getElementById('prop-bitacora-lista').innerHTML = '<div class="error-box">' + data.error + '</div>'; return; }
+    renderBitacoraLista(data, 'prop-bitacora-lista');
+  } catch(err){
+    document.getElementById('prop-bitacora-lista').innerHTML = '<div class="error-box">Error de conexión.</div>';
+  }
+}
+
+async function irBitacoraComite(){
+  ir('s-bitacora-comite');
+  filtrarBitacoraComite('Todos');
+}
+
+async function filtrarBitacoraComite(servicio){
+  document.getElementById('com-bit-todos').classList.toggle('active', servicio === 'Todos');
+  document.getElementById('com-bit-piscina').classList.toggle('active', servicio === 'Piscina');
+  document.getElementById('com-bit-areas').classList.toggle('active', servicio === 'Áreas comunes');
+  document.getElementById('com-bit-jardin').classList.toggle('active', servicio === 'Jardinería');
+  document.getElementById('com-bit-pintura').classList.toggle('active', servicio === 'Pintura');
+
+  try {
+    const res = await fetch(API_URL + "?accion=bitacora&nombre=" + encodeURIComponent(credComite.nombre) + "&clave=" + encodeURIComponent(credComite.clave) + "&servicio=" + encodeURIComponent(servicio));
+    const data = await res.json();
+    if (data.error){ document.getElementById('comite-bitacora-lista').innerHTML = '<div class="error-box">' + data.error + '</div>'; return; }
+    renderBitacoraLista(data, 'comite-bitacora-lista');
+  } catch(err){
+    document.getElementById('comite-bitacora-lista').innerHTML = '<div class="error-box">Error de conexión.</div>';
   }
 }
 
