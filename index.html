@@ -315,11 +315,29 @@ body { font-family:'Segoe UI',Arial,sans-serif; background:var(--cielo-deep); co
   </div>
 </div>
 
+<!-- REGLAMENTO -->
+<div class="screen" id="s-reglamento">
+  <div class="app-header">
+    <div class="header-title"><h1>Reglamento interno</h1><p id="reglamento-nombre-privada">Antes de continuar</p></div>
+  </div>
+  <div class="content">
+    <div class="card">
+      <div class="card-title">Aceptación de reglamento</div>
+      <p id="reglamento-mensaje" style="font-size:13.5px; color:var(--tinta); line-height:1.5; margin-bottom:14px;"></p>
+      <div id="reglamento-texto" style="max-height:280px; overflow-y:auto; background:var(--cielo-mid); border:1px solid var(--cielo-line); border-radius:10px; padding:14px; font-size:12.5px; color:var(--azul-txt); line-height:1.6; white-space:pre-wrap;"></div>
+    </div>
+    <div id="reglamento-error" class="error-box hidden"></div>
+    <button class="btn-primary" style="width:100%;" id="btn-aceptar-reglamento" onclick="aceptarReglamento()">He leído y acepto el reglamento</button>
+    <button class="btn-secondary" style="width:100%; margin-top:10px; opacity:.85;" onclick="ir('s-inicio')">Cancelar y salir</button>
+  </div>
+</div>
+
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbxjH6hGZBjlQbUCp1DDt6HCse7HAq_s_hy2gXenYluW-g71NTY1vRFdKdJcLKIDC7Uk/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzU9vHRf2xGdccCFcWWNfn5Im0YQ4w80v99d-QRUgsQxC16zfHVgzVr_8FWONx3zJpB/exec";
 let dataUnidad = null;   // datos de UN solo propietario logueado
 let dataComite = null;   // datos completos, solo tras login válido del comité
 let credComite = { nombre: "", clave: "" }; // credenciales guardadas tras login, para reusar en otras pantallas
+let sesionUnidad = { unidad: "", clave: "", tipo: "", etiqueta: null, apodo: null }; // sesión activa de Titular o Usuario secundario
 
 function ir(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
@@ -672,26 +690,104 @@ async function entrarPropietario(){
   if (!clave){ errBox.textContent = "Ingresa tu clave."; errBox.classList.remove('hidden'); return; }
 
   try {
-    const res = await fetch(API_URL + "?accion=loginPropietario&unidad=" + encodeURIComponent(unidad) + "&clave=" + encodeURIComponent(clave));
+    const res = await fetch(API_URL + "?accion=loginUnidad&unidad=" + encodeURIComponent(unidad) + "&clave=" + encodeURIComponent(clave));
     const data = await res.json();
     if (data.error){
       errBox.textContent = "Clave incorrecta para esta unidad.";
       errBox.classList.remove('hidden');
       return;
     }
-    dataUnidad = data;
-    mostrarPropietario(data);
+    sesionUnidad = { unidad: data.unidad, clave: clave, tipo: data.tipo, etiqueta: data.etiqueta, apodo: data.apodo };
+    if (!data.reglamentoAceptado){
+      abrirReglamento();
+    } else {
+      await cargarHistorialUnidad();
+    }
   } catch(err){
     errBox.textContent = "No se pudo conectar con el servidor.";
     errBox.classList.remove('hidden');
   }
 }
 
+async function cargarHistorialUnidad(){
+  try {
+    const res = await fetch(API_URL + "?accion=historialUnidad&unidad=" + encodeURIComponent(sesionUnidad.unidad) + "&clave=" + encodeURIComponent(sesionUnidad.clave));
+    const data = await res.json();
+    if (data.error){
+      ir('s-select-depto');
+      const errBox = document.getElementById('prop-login-error');
+      errBox.textContent = "No se pudo cargar tu información. Intenta de nuevo.";
+      errBox.classList.remove('hidden');
+      return;
+    }
+    dataUnidad = data;
+    mostrarPropietario(data);
+  } catch(err){
+    ir('s-select-depto');
+  }
+}
+
+async function abrirReglamento(){
+  let config = {};
+  try {
+    const res = await fetch(API_URL + "?accion=configPrivada");
+    config = await res.json();
+  } catch(err){ config = {}; }
+
+  let mensaje;
+  if (sesionUnidad.tipo === "titular"){
+    mensaje = `Yo, propietario del departamento ${sesionUnidad.unidad}, confirmo que he leído el reglamento interno de la privada y acepto cumplir con las normas y sanciones que en él se establecen.`;
+  } else {
+    const etiquetaTxt = sesionUnidad.etiqueta ? sesionUnidad.etiqueta + ", " : "";
+    mensaje = `Yo, ${etiquetaTxt}usuario autorizado del departamento ${sesionUnidad.unidad}, confirmo que he leído el reglamento interno de la privada y acepto cumplir con las normas y sanciones que en él se establecen.`;
+  }
+
+  document.getElementById('reglamento-mensaje').textContent = mensaje;
+  document.getElementById('reglamento-texto').textContent = config.reglamento || "Reglamento no disponible por el momento.";
+  document.getElementById('reglamento-nombre-privada').textContent = config.nombrePrivada || "Antes de continuar";
+  document.getElementById('reglamento-error').classList.add('hidden');
+  ir('s-reglamento');
+}
+
+async function aceptarReglamento(){
+  const btn = document.getElementById('btn-aceptar-reglamento');
+  const errBox = document.getElementById('reglamento-error');
+  errBox.classList.add('hidden');
+  btn.disabled = true;
+  btn.textContent = "Guardando…";
+
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify({ accion: "aceptarReglamento", unidad: sesionUnidad.unidad, clave: sesionUnidad.clave, tipo: sesionUnidad.tipo })
+    });
+    const data = await res.json();
+    if (data.error){
+      errBox.textContent = data.error;
+      errBox.classList.remove('hidden');
+      btn.disabled = false;
+      btn.textContent = "He leído y acepto el reglamento";
+      return;
+    }
+    await cargarHistorialUnidad();
+  } catch(err){
+    errBox.textContent = "No se pudo conectar con el servidor.";
+    errBox.classList.remove('hidden');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "He leído y acepto el reglamento";
+  }
+}
+
 function mostrarPropietario(u){
   document.getElementById('prop-titulo').textContent = "Depto " + u.unidad;
 
-  const ult = ultimoEstado(u.historial);
   let html = '';
+  if (sesionUnidad.tipo === "usuario" && sesionUnidad.apodo){
+    html += `<div style="text-align:center; font-size:13px; color:var(--azul-txt); margin-bottom:10px;">Bienvenido, ${sesionUnidad.apodo}</div>`;
+  }
+
+  const ult = ultimoEstado(u.historial);
   if (ult){
     const color = ult.estado === "Pagado" ? "var(--verde)" : "var(--rojo)";
     html += `
@@ -708,9 +804,119 @@ function mostrarPropietario(u){
 
   html += construirFiltroHistorial('prop');
 
+  if (sesionUnidad.tipo === "usuario"){
+    html += construirEdicionApodo();
+  } else if (sesionUnidad.tipo === "titular"){
+    html += `<div class="seccion-titulo">Usuarios de este depto</div><div id="gestion-usuarios-cont"><div class="loader">Cargando…</div></div>`;
+  }
+
   document.getElementById('prop-content').innerHTML = html;
   ir('s-propietario');
   filtrarHistorial('prop', 'todos');
+
+  if (sesionUnidad.tipo === "titular"){
+    cargarGestionUsuarios();
+  }
+}
+
+function construirEdicionApodo(){
+  return `
+    <div class="card">
+      <div class="card-title">Tu apodo (opcional)</div>
+      <div class="fg">
+        <label>Cómo quieres que te saludemos</label>
+        <input type="text" id="input-apodo" placeholder="Ej. Mario" value="${sesionUnidad.apodo || ''}" style="width:100%; padding:12px 14px; border:1.5px solid var(--cielo-line); border-radius:10px; font-size:14px; background:var(--cielo-mid); color:var(--tinta);">
+      </div>
+      <div id="apodo-msg" class="msg ok"></div>
+      <button class="btn-secondary" style="width:100%;" onclick="guardarApodo()">Guardar apodo</button>
+    </div>
+  `;
+}
+
+async function guardarApodo(){
+  const apodo = document.getElementById('input-apodo').value.trim();
+  const msgBox = document.getElementById('apodo-msg');
+  msgBox.classList.remove('show');
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify({ accion: "actualizarApodo", unidad: sesionUnidad.unidad, clave: sesionUnidad.clave, apodo })
+    });
+    const data = await res.json();
+    if (!data.error){
+      sesionUnidad.apodo = apodo;
+      msgBox.textContent = "Apodo actualizado.";
+      msgBox.classList.add('show');
+    }
+  } catch(err){}
+}
+
+async function cargarGestionUsuarios(){
+  const cont = document.getElementById('gestion-usuarios-cont');
+  try {
+    const res = await fetch(API_URL + "?accion=listaUsuariosUnidad&unidad=" + encodeURIComponent(sesionUnidad.unidad) + "&clave=" + encodeURIComponent(sesionUnidad.clave));
+    const data = await res.json();
+    if (data.error){ cont.innerHTML = '<div class="error-box">' + data.error + '</div>'; return; }
+
+    let html = `<div class="card"><div class="card-title">Plan: ${data.limite} usuario(s) por depto</div>`;
+
+    if (!data.usuarios.length){
+      html += `<div style="text-align:center; color:var(--azul-txt); font-size:13px; margin-bottom:10px;">Aún no has agregado usuarios adicionales.</div>`;
+    } else {
+      data.usuarios.forEach(us => {
+        html += `
+          <div class="unidad-row">
+            <div>
+              <div class="unidad-nombre">${us.etiqueta || "Usuario adicional"}</div>
+              <div class="unidad-edif">${us.reglamentoAceptado ? "Reglamento aceptado" : "Reglamento pendiente"}</div>
+            </div>
+            <span class="badge Pagado">${us.clave}</span>
+          </div>
+        `;
+      });
+    }
+
+    const totalActual = data.usuarios.length + 1;
+    if (totalActual < data.limite){
+      html += `
+        <div class="fg" style="margin-top:10px;">
+          <label>Etiqueta (ej. Inquilino, Familiar)</label>
+          <input type="text" id="input-nueva-etiqueta" placeholder="Opcional" style="width:100%; padding:12px 14px; border:1.5px solid var(--cielo-line); border-radius:10px; font-size:14px; background:var(--cielo-mid); color:var(--tinta);">
+        </div>
+        <div id="agregar-usuario-error" class="error-box hidden"></div>
+        <button class="btn-secondary" style="width:100%;" onclick="agregarUsuarioDepto()">Agregar usuario</button>
+      `;
+    } else {
+      html += `<div style="text-align:center; font-size:12.5px; color:var(--azul-txt); margin-top:8px;">Ya alcanzaste el máximo de usuarios de tu plan.</div>`;
+    }
+
+    html += `</div>`;
+    cont.innerHTML = html;
+  } catch(err){
+    cont.innerHTML = '<div class="error-box">Error de conexión.</div>';
+  }
+}
+
+async function agregarUsuarioDepto(){
+  const etiqueta = document.getElementById('input-nueva-etiqueta').value.trim();
+  const errBox = document.getElementById('agregar-usuario-error');
+  errBox.classList.add('hidden');
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify({ accion: "agregarUsuarioUnidad", unidad: sesionUnidad.unidad, claveTitular: sesionUnidad.clave, etiqueta })
+    });
+    const data = await res.json();
+    if (data.error){
+      errBox.textContent = data.error;
+      errBox.classList.remove('hidden');
+      return;
+    }
+    cargarGestionUsuarios();
+  } catch(err){
+    errBox.textContent = "No se pudo conectar con el servidor.";
+    errBox.classList.remove('hidden');
+  }
 }
 
 /* ── Agregar personal ── */
@@ -936,6 +1142,26 @@ async function enviarRegistroServicio(){
     btn.textContent = "Guardar registro";
   }
 }
+
+/* ── Branding dinámico por privada (CONFIG_PRIVADA) — solo nombre, los colores se diseñan a mano por privada ── */
+async function aplicarBrandingPrivada(){
+  try {
+    const res = await fetch(API_URL + "?accion=configPrivada");
+    const config = await res.json();
+
+    if (config.nombrePrivada){
+      document.title = config.nombrePrivada + " — Finanzas";
+      const h1Inicio = document.querySelector('#s-inicio .inicio-logo h1');
+      if (h1Inicio) h1Inicio.textContent = config.nombrePrivada;
+      const footnote = document.querySelector('.footnote');
+      if (footnote) footnote.textContent = "MÚUCH' Administración Residencial · " + config.nombrePrivada;
+    }
+  } catch(err){
+    // si falla, la app sigue con el nombre por defecto del HTML
+  }
+}
+
+aplicarBrandingPrivada();
 </script>
 
 <div class="footnote">MÚUCH' Administración Residencial · Privada Chetumal</div>
