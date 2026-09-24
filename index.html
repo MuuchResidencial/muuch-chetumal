@@ -1376,12 +1376,20 @@ async function enviarRegistroServicio(){
   }
 }
 
+/* Normaliza el Plan sin importar cómo se haya escrito en el Sheet
+   (INTEGRAL, integral, Integral, con espacios, etc.) */
+function normalizarPlan(plan){
+  const mapa = { esencial: "Esencial", plus: "Plus", integral: "Integral" };
+  return mapa[(plan || "").toString().trim().toLowerCase()] || "Esencial";
+}
+
 /* ── Branding dinámico por privada (CONFIG_PRIVADA) — solo nombre, los colores se diseñan a mano por privada ── */
 async function aplicarBrandingPrivada(){
   try {
     const res = await fetch(API_URL + "?accion=configPrivada");
     const config = await res.json();
     configGlobal = config;
+    configGlobal.plan = normalizarPlan(config.plan);
 
     if (config.nombrePrivada){
       document.title = config.nombrePrivada + " — Finanzas";
