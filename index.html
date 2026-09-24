@@ -119,6 +119,24 @@ body { font-family:'Segoe UI',Arial,sans-serif; background:var(--cielo-deep); co
 .filtro-btn { flex:1; padding:13px 8px; border-radius:11px; border:1.5px solid var(--cielo-line);
   background:#fff; font-size:13.5px; font-weight:700; color:var(--azul-txt); cursor:pointer; }
 .filtro-btn.active { background:linear-gradient(135deg, var(--dorado-claro), var(--dorado-med)); color:var(--tinta); border-color:var(--dorado-hover); }
+
+/* Tabbar inferior (Finanzas / Usuarios / Bitácora) */
+.tabbar {
+  display:flex; border-top:1px solid var(--cielo-line); background:#fff;
+  position:sticky; bottom:0;
+}
+.tabbar button {
+  flex:1; background:none; border:none; padding:10px 4px 8px;
+  display:flex; flex-direction:column; align-items:center; gap:3px;
+  font-size:9.5px; font-weight:700; color:var(--gris-btn); cursor:pointer;
+}
+.tabbar button.active { color:var(--dorado-hover); }
+.tabbar button .tab-icon { font-size:18px; }
+.tabbar button .tab-dot {
+  width:14px; height:2px; border-radius:2px; background:var(--dorado);
+  margin-top:1px; visibility:hidden;
+}
+.tabbar button.active .tab-dot { visibility:visible; }
 </style>
 </head>
 <body>
@@ -193,6 +211,7 @@ body { font-family:'Segoe UI',Arial,sans-serif; background:var(--cielo-deep); co
   <div class="content" id="comite-content">
     <div class="loader">Cargando información financiera…</div>
   </div>
+  <div class="tabbar" id="comite-tabbar"></div>
 </div>
 
 <!-- DETALLE DE UNIDAD -->
@@ -211,6 +230,7 @@ body { font-family:'Segoe UI',Arial,sans-serif; background:var(--cielo-deep); co
     <div class="header-title"><h1 id="prop-titulo">Mi unidad</h1><p>Estado de cuenta</p></div>
   </div>
   <div class="content" id="prop-content"></div>
+  <div class="tabbar" id="prop-tabbar"></div>
 </div>
 
 <!-- AGREGAR PERSONAL -->
@@ -258,23 +278,6 @@ body { font-family:'Segoe UI',Arial,sans-serif; background:var(--cielo-deep); co
   </div>
 </div>
 
-<!-- BITÁCORA (COMITÉ) -->
-<div class="screen" id="s-bitacora-comite">
-  <div class="app-header">
-    <button class="back" onclick="ir('s-comite')">←</button>
-    <div class="header-title"><h1>Bitácora de servicios</h1><p>Actividades registradas</p></div>
-  </div>
-  <div class="content">
-    <div style="display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap;">
-      <button class="filtro-btn active" id="com-bit-todos" onclick="filtrarBitacoraComite('Todos')">Todos</button>
-      <button class="filtro-btn" id="com-bit-piscina" onclick="filtrarBitacoraComite('Piscina')">Piscina</button>
-      <button class="filtro-btn" id="com-bit-areas" onclick="filtrarBitacoraComite('Áreas comunes')">Áreas</button>
-      <button class="filtro-btn" id="com-bit-jardin" onclick="filtrarBitacoraComite('Jardinería')">Jardín</button>
-      <button class="filtro-btn" id="com-bit-pintura" onclick="filtrarBitacoraComite('Pintura')">Pintura</button>
-    </div>
-    <div id="comite-bitacora-lista"><div class="loader">Cargando…</div></div>
-  </div>
-</div>
 
 <!-- LOGIN PERSONAL -->
 <div class="screen" id="s-login-personal">
@@ -315,9 +318,9 @@ body { font-family:'Segoe UI',Arial,sans-serif; background:var(--cielo-deep); co
         <label>Foto de evidencia</label>
         <div class="foto-upload" onclick="document.getElementById('input-foto-servicio').click();" style="border:2px dashed var(--cielo-line); border-radius:14px; padding:22px 16px; text-align:center; cursor:pointer; background:var(--cielo-mid);">
           <span style="font-size:28px; display:block; margin-bottom:8px;">📷</span>
-          <div style="font-size:13px; font-weight:600; color:var(--tinta);" id="texto-foto-servicio">Tomar foto o subir imagen</div>
+          <div style="font-size:13px; font-weight:600; color:var(--tinta);" id="texto-foto-servicio">Tomar foto o elegir de la galería</div>
         </div>
-        <input type="file" id="input-foto-servicio" accept="image/*" capture="environment" class="hidden" onchange="previsualizarFoto()">
+        <input type="file" id="input-foto-servicio" accept="image/*" class="hidden" onchange="previsualizarFoto()">
         <img id="preview-foto-servicio" class="hidden" style="width:100%; border-radius:12px; margin-top:10px; border:1px solid var(--cielo-line);">
       </div>
 
@@ -329,6 +332,55 @@ body { font-family:'Segoe UI',Arial,sans-serif; background:var(--cielo-deep); co
       <div id="registrar-servicio-error" class="error-box hidden"></div>
       <div id="registrar-servicio-exito" class="msg ok"></div>
       <button class="btn-primary" style="width:100%;" onclick="enviarRegistroServicio()" id="btn-enviar-servicio">Guardar registro</button>
+    </div>
+  </div>
+</div>
+
+<!-- REGISTRAR GASTO (Comité) -->
+<div class="screen" id="s-registrar-gasto">
+  <div class="app-header">
+    <button class="back" onclick="ir('s-comite')">←</button>
+    <div class="header-title"><h1>Registrar gasto</h1><p>Comprobante y detalle</p></div>
+  </div>
+  <div class="content">
+    <div class="card">
+      <div class="card-title">Nuevo gasto</div>
+
+      <div class="fg">
+        <label>Foto del comprobante</label>
+        <div class="foto-upload" onclick="document.getElementById('input-foto-gasto').click();" style="border:2px dashed var(--cielo-line); border-radius:14px; padding:22px 16px; text-align:center; cursor:pointer; background:var(--cielo-mid);">
+          <span style="font-size:28px; display:block; margin-bottom:8px;">🧾</span>
+          <div style="font-size:13px; font-weight:600; color:var(--tinta);" id="texto-foto-gasto">Tomar foto o elegir de la galería</div>
+        </div>
+        <input type="file" id="input-foto-gasto" accept="image/*" class="hidden" onchange="previsualizarFotoGasto()">
+        <img id="preview-foto-gasto" class="hidden" style="width:100%; border-radius:12px; margin-top:10px; border:1px solid var(--cielo-line);">
+      </div>
+
+      <div class="fg">
+        <label>Categoría</label>
+        <select id="select-categoria-gasto" style="width:100%; padding:12px 14px; border:1.5px solid var(--cielo-line); border-radius:10px; font-size:14px; background:var(--cielo-mid); color:var(--tinta);">
+          <option value="Mantenimiento">Mantenimiento</option>
+          <option value="Seguridad">Seguridad</option>
+          <option value="Jardinería">Jardinería</option>
+          <option value="Nómina">Nómina</option>
+          <option value="Administración">Administración</option>
+          <option value="Otros">Otros</option>
+        </select>
+      </div>
+
+      <div class="fg">
+        <label>Descripción del gasto</label>
+        <textarea id="input-descripcion-gasto" placeholder="Ej. Pago de químicos para alberca, agosto" style="width:100%; min-height:70px; padding:12px 14px; border:1.5px solid var(--cielo-line); border-radius:10px; font-size:14px; background:var(--cielo-mid); color:var(--tinta); font-family:inherit;"></textarea>
+      </div>
+
+      <div class="fg">
+        <label>Monto (MXN)</label>
+        <input type="number" id="input-monto-gasto" placeholder="Ej. 1500" min="0" step="0.01" style="width:100%; padding:12px 14px; border:1.5px solid var(--cielo-line); border-radius:10px; font-size:14px; background:var(--cielo-mid); color:var(--tinta);">
+      </div>
+
+      <div id="registrar-gasto-error" class="error-box hidden"></div>
+      <div id="registrar-gasto-exito" class="msg ok"></div>
+      <button class="btn-primary" style="width:100%;" onclick="enviarRegistroGasto()" id="btn-enviar-gasto">Guardar gasto</button>
     </div>
   </div>
 </div>
@@ -351,11 +403,15 @@ body { font-family:'Segoe UI',Arial,sans-serif; background:var(--cielo-deep); co
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbzONaHkzh_xUkA5kIq-z8_dEx62LmmCav0_1byKpXnsSARwZjZo5XDWbHOpu7oQkihF/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbyFH7o4YVH5uzz6v7laFopq7Qcp7N2ceA6cC5r173OuUuPM8ove20FsLHUiehjEgLuh/exec";
 let dataUnidad = null;   // datos de UN solo propietario logueado
 let dataComite = null;   // datos completos, solo tras login válido del comité
 let credComite = { nombre: "", clave: "" }; // credenciales guardadas tras login, para reusar en otras pantallas
 let sesionUnidad = { unidad: "", clave: "", tipo: "", etiqueta: null, apodo: null }; // sesión activa de Titular o Usuario secundario
+let configGlobal = { plan: "Plus" };
+const ORDEN_PLAN = { Esencial: 0, Plus: 1, Integral: 2 };
+let moduloPropActivo = 'finanzas';
+let moduloComiteActivo = 'finanzas';
 
 function ir(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
@@ -564,44 +620,95 @@ async function entrarComite(){
 }
 
 function renderComite(data){
-  let pagados = 0, adeudos = 0;
-  data.forEach(u => {
-    const ult = ultimoEstado(u.historial);
-    if (ult && ult.estado === "Pagado") pagados++; else if (ult) adeudos++;
-  });
+  moduloComiteActivo = 'finanzas';
+  renderTabBarComite();
+  renderModuloComite(data);
+}
 
-  let html = `
-    <div style="display:flex; gap:8px; margin-bottom:14px;">
-      <div class="card" style="flex:1; text-align:center; cursor:pointer; padding:14px 6px;" onclick="irAgregarPersonal()">
-        <div style="font-size:20px;">👷</div>
-        <div style="font-size:10.5px; font-weight:700; margin-top:4px;">Agregar personal</div>
-      </div>
-      <div class="card" style="flex:1; text-align:center; cursor:pointer; padding:14px 6px;" onclick="irClavesPropietarios()">
-        <div style="font-size:20px;">🔑</div>
-        <div style="font-size:10.5px; font-weight:700; margin-top:4px;">Claves de deptos</div>
-      </div>
-      <div class="card" style="flex:1; text-align:center; cursor:pointer; padding:14px 6px;" onclick="irBitacoraComite()">
-        <div style="font-size:20px;">🧾</div>
-        <div style="font-size:10.5px; font-weight:700; margin-top:4px;">Bitácora</div>
-      </div>
-    </div>
-    <div class="resumen-grid">
-      <div class="resumen-box verde" style="cursor:pointer;" id="btn-filtro-corriente" onclick="filtrarListaComite('corriente')">
-        <div class="rb-label">Al corriente</div><div class="rb-valor">${pagados}</div>
-      </div>
-      <div class="resumen-box rojo" style="cursor:pointer;" id="btn-filtro-adeudo" onclick="filtrarListaComite('adeudo')">
-        <div class="rb-label">Con adeudo</div><div class="rb-valor">${adeudos}</div>
-      </div>
-    </div>
-    <div style="display:flex; gap:8px; margin:10px 0 6px 0;">
-      <button class="filtro-btn active" id="btn-filtro-todos-comite" onclick="filtrarListaComite('todos')">Ver todas</button>
-    </div>
-    <div class="seccion-titulo">Unidades</div>
-    <div id="lista-unidades-comite"></div>
-  `;
+function renderTabBarComite(){
+  const tabsDisponibles = [
+    { key:'finanzas', label:'Finanzas', icon:'💰', planMin:'Esencial' },
+    { key:'bitacora',  label:'Bitácora', icon:'🧾', planMin:'Plus' },
+    { key:'gastos',    label:'Gastos',   icon:'💵', planMin:'Plus' },
+  ].filter(t => ORDEN_PLAN[configGlobal.plan] >= ORDEN_PLAN[t.planMin]);
 
-  document.getElementById('comite-content').innerHTML = html;
-  renderListaUnidadesComite(data);
+  document.getElementById('comite-tabbar').innerHTML = tabsDisponibles.map(t => `
+    <button class="${moduloComiteActivo === t.key ? 'active' : ''}" onclick="cambiarModuloComite('${t.key}')">
+      <span class="tab-icon">${t.icon}</span>${t.label}
+      <span class="tab-dot"></span>
+    </button>
+  `).join('');
+}
+
+function cambiarModuloComite(key){
+  moduloComiteActivo = key;
+  renderTabBarComite();
+  renderModuloComite(dataComite);
+}
+
+function renderModuloComite(data){
+  const cont = document.getElementById('comite-content');
+
+  if (moduloComiteActivo === 'finanzas'){
+    let pagados = 0, adeudos = 0;
+    data.forEach(u => {
+      const ult = ultimoEstado(u.historial);
+      if (ult && ult.estado === "Pagado") pagados++; else if (ult) adeudos++;
+    });
+
+    cont.innerHTML = `
+      <div style="display:flex; gap:8px; margin-bottom:14px;">
+        <div class="card" style="flex:1; text-align:center; cursor:pointer; padding:14px 6px;" onclick="irAgregarPersonal()">
+          <div style="font-size:20px;">👷</div>
+          <div style="font-size:10.5px; font-weight:700; margin-top:4px;">Agregar personal</div>
+        </div>
+        <div class="card" style="flex:1; text-align:center; cursor:pointer; padding:14px 6px;" onclick="irClavesPropietarios()">
+          <div style="font-size:20px;">🔑</div>
+          <div style="font-size:10.5px; font-weight:700; margin-top:4px;">Claves de deptos</div>
+        </div>
+      </div>
+      <div class="resumen-grid">
+        <div class="resumen-box verde" style="cursor:pointer;" id="btn-filtro-corriente" onclick="filtrarListaComite('corriente')">
+          <div class="rb-label">Al corriente</div><div class="rb-valor">${pagados}</div>
+        </div>
+        <div class="resumen-box rojo" style="cursor:pointer;" id="btn-filtro-adeudo" onclick="filtrarListaComite('adeudo')">
+          <div class="rb-label">Con adeudo</div><div class="rb-valor">${adeudos}</div>
+        </div>
+      </div>
+      <div style="display:flex; gap:8px; margin:10px 0 6px 0;">
+        <button class="filtro-btn active" id="btn-filtro-todos-comite" onclick="filtrarListaComite('todos')">Ver todas</button>
+      </div>
+      <div class="seccion-titulo">Unidades</div>
+      <div id="lista-unidades-comite"></div>
+    `;
+    renderListaUnidadesComite(data);
+  }
+
+  else if (moduloComiteActivo === 'bitacora'){
+    cont.innerHTML = `
+      <div style="display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap;">
+        <button class="filtro-btn active" id="com-bit-todos" onclick="filtrarBitacoraComite('Todos')">Todos</button>
+        <button class="filtro-btn" id="com-bit-piscina" onclick="filtrarBitacoraComite('Piscina')">Piscina</button>
+        <button class="filtro-btn" id="com-bit-areas" onclick="filtrarBitacoraComite('Áreas comunes')">Áreas</button>
+        <button class="filtro-btn" id="com-bit-jardin" onclick="filtrarBitacoraComite('Jardinería')">Jardín</button>
+        <button class="filtro-btn" id="com-bit-pintura" onclick="filtrarBitacoraComite('Pintura')">Pintura</button>
+      </div>
+      <div id="comite-bitacora-lista"><div class="loader">Cargando…</div></div>
+    `;
+    filtrarBitacoraComite('Todos');
+  }
+
+  else if (moduloComiteActivo === 'gastos'){
+    cont.innerHTML = `
+      <div class="card" style="text-align:center; cursor:pointer; padding:14px 6px; margin-bottom:12px;" onclick="abrirRegistrarGasto()">
+        <div style="font-size:20px;">➕🧾</div>
+        <div style="font-size:12.5px; font-weight:700; margin-top:4px;">Registrar nuevo gasto</div>
+      </div>
+      <div class="seccion-titulo">Gastos registrados</div>
+      <div id="comite-gastos-lista"><div class="loader">Cargando…</div></div>
+    `;
+    cargarGastos('comite-gastos-lista');
+  }
 }
 
 function renderListaUnidadesComite(data){
@@ -803,54 +910,91 @@ async function aceptarReglamento(){
 
 function mostrarPropietario(u){
   document.getElementById('prop-titulo').textContent = "Depto " + u.unidad;
-
-  let html = '';
-  if (sesionUnidad.tipo === "usuario" && sesionUnidad.apodo){
-    html += `<div style="text-align:center; font-size:13px; color:var(--azul-txt); margin-bottom:10px;">Bienvenido, ${sesionUnidad.apodo}</div>`;
-  }
-
-  const ult = ultimoEstado(u.historial);
-  if (ult){
-    const color = ult.estado === "Pagado" ? "var(--verde)" : "var(--rojo)";
-    html += `
-      <div class="card" style="text-align:center;">
-        <div class="card-title">Estado más reciente (${periodoLegible(ult.periodo)})</div>
-        <div style="font-size:26px;font-weight:800;color:${color};font-family:'Playfair Display',serif;">${ult.estado === "Pagado" ? "Al corriente" : "Con adeudo"}</div>
-      </div>
-    `;
-  }
-
-  html += construirResumenAnual(u.historial, 'prop');
-
-  html += construirSelectorPeriodo(u.historial, 'prop');
-
-  html += construirFiltroHistorial('prop');
-
-  html += `
-    <div class="seccion-titulo">Bitácora de servicios</div>
-    <div style="display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap;">
-      <button class="filtro-btn active" id="prop-bit-todos" onclick="filtrarBitacoraProp('Todos')">Todos</button>
-      <button class="filtro-btn" id="prop-bit-piscina" onclick="filtrarBitacoraProp('Piscina')">Piscina</button>
-      <button class="filtro-btn" id="prop-bit-areas" onclick="filtrarBitacoraProp('Áreas comunes')">Áreas</button>
-      <button class="filtro-btn" id="prop-bit-jardin" onclick="filtrarBitacoraProp('Jardinería')">Jardín</button>
-      <button class="filtro-btn" id="prop-bit-pintura" onclick="filtrarBitacoraProp('Pintura')">Pintura</button>
-    </div>
-    <div id="prop-bitacora-lista"><div class="loader">Cargando…</div></div>
-  `;
-
-  if (sesionUnidad.tipo === "usuario"){
-    html += construirEdicionApodo();
-  } else if (sesionUnidad.tipo === "titular"){
-    html += `<div class="seccion-titulo">Usuarios de este depto</div><div id="gestion-usuarios-cont"><div class="loader">Cargando…</div></div>`;
-  }
-
-  document.getElementById('prop-content').innerHTML = html;
+  moduloPropActivo = 'finanzas';
+  renderTabBarProp();
+  renderModuloProp(u);
   ir('s-propietario');
-  filtrarHistorial('prop', 'todos');
-  filtrarBitacoraProp('Todos');
+}
 
-  if (sesionUnidad.tipo === "titular"){
-    cargarGestionUsuarios();
+function renderTabBarProp(){
+  const tabsDisponibles = [
+    { key:'finanzas', label:'Finanzas', icon:'💰', planMin:'Esencial' },
+    { key:'usuarios',  label:'Usuarios', icon:'👤', planMin:'Plus' },
+    { key:'bitacora',  label:'Bitácora', icon:'🧾', planMin:'Plus' },
+    { key:'gastos',    label:'Gastos',   icon:'💵', planMin:'Plus' },
+  ].filter(t => ORDEN_PLAN[configGlobal.plan] >= ORDEN_PLAN[t.planMin]);
+
+  document.getElementById('prop-tabbar').innerHTML = tabsDisponibles.map(t => `
+    <button class="${moduloPropActivo === t.key ? 'active' : ''}" onclick="cambiarModuloProp('${t.key}')">
+      <span class="tab-icon">${t.icon}</span>${t.label}
+      <span class="tab-dot"></span>
+    </button>
+  `).join('');
+}
+
+function cambiarModuloProp(key){
+  moduloPropActivo = key;
+  renderTabBarProp();
+  renderModuloProp(dataUnidad);
+}
+
+function renderModuloProp(u){
+  const cont = document.getElementById('prop-content');
+
+  if (moduloPropActivo === 'finanzas'){
+    let html = '';
+    if (sesionUnidad.tipo === "usuario" && sesionUnidad.apodo){
+      html += `<div style="text-align:center; font-size:13px; color:var(--azul-txt); margin-bottom:10px;">Bienvenido, ${sesionUnidad.apodo}</div>`;
+    }
+    const ult = ultimoEstado(u.historial);
+    if (ult){
+      const color = ult.estado === "Pagado" ? "var(--verde)" : "var(--rojo)";
+      html += `
+        <div class="card" style="text-align:center;">
+          <div class="card-title">Estado más reciente (${periodoLegible(ult.periodo)})</div>
+          <div style="font-size:26px;font-weight:800;color:${color};font-family:'Playfair Display',serif;">${ult.estado === "Pagado" ? "Al corriente" : "Con adeudo"}</div>
+        </div>
+      `;
+    }
+    html += construirResumenAnual(u.historial, 'prop');
+    html += `<div style="text-align:center; font-size:11px; color:var(--azul-txt); opacity:.7; margin:-2px 0 14px;">Solo ves tu propia unidad — nunca la de otros deptos.</div>`;
+    html += construirSelectorPeriodo(u.historial, 'prop');
+    html += construirFiltroHistorial('prop');
+    cont.innerHTML = html;
+    filtrarHistorial('prop', 'todos');
+  }
+
+  else if (moduloPropActivo === 'usuarios'){
+    if (sesionUnidad.tipo === 'titular'){
+      cont.innerHTML = `<div class="seccion-titulo">Usuarios de este depto</div><div id="gestion-usuarios-cont"><div class="loader">Cargando…</div></div>`;
+      cargarGestionUsuarios();
+    } else {
+      cont.innerHTML = construirEdicionApodo();
+    }
+  }
+
+  else if (moduloPropActivo === 'bitacora'){
+    cont.innerHTML = `
+      <div class="seccion-titulo">Bitácora de servicios</div>
+      <div style="display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap;">
+        <button class="filtro-btn active" id="prop-bit-todos" onclick="filtrarBitacoraProp('Todos')">Todos</button>
+        <button class="filtro-btn" id="prop-bit-piscina" onclick="filtrarBitacoraProp('Piscina')">Piscina</button>
+        <button class="filtro-btn" id="prop-bit-areas" onclick="filtrarBitacoraProp('Áreas comunes')">Áreas</button>
+        <button class="filtro-btn" id="prop-bit-jardin" onclick="filtrarBitacoraProp('Jardinería')">Jardín</button>
+        <button class="filtro-btn" id="prop-bit-pintura" onclick="filtrarBitacoraProp('Pintura')">Pintura</button>
+      </div>
+      <div id="prop-bitacora-lista"><div class="loader">Cargando…</div></div>
+    `;
+    filtrarBitacoraProp('Todos');
+  }
+
+  else if (moduloPropActivo === 'gastos'){
+    cont.innerHTML = `
+      <div class="seccion-titulo">Gastos de la privada</div>
+      <div style="font-size:11.5px; color:var(--azul-txt); opacity:.75; margin:-4px 0 10px;">Registrados por el comité, con comprobante.</div>
+      <div id="prop-gastos-lista"><div class="loader">Cargando…</div></div>
+    `;
+    cargarGastos('prop-gastos-lista');
   }
 }
 
@@ -1055,6 +1199,7 @@ function filtrarClavesPropietarios(){
 /* ── Login Personal + Registrar actividad ── */
 let credPersonal = { nombre: "", clave: "", rol: "" };
 let fotoBase64Servicio = null;
+let fotoBase64Gasto = null;
 
 async function entrarPersonal(){
   const nombre = document.getElementById('input-nombre-personal').value.trim();
@@ -1103,7 +1248,7 @@ function abrirRegistrarServicio(){
 
   document.getElementById('input-foto-servicio').value = '';
   document.getElementById('preview-foto-servicio').classList.add('hidden');
-  document.getElementById('texto-foto-servicio').textContent = "Tomar foto o subir imagen";
+  document.getElementById('texto-foto-servicio').textContent = "Tomar foto o elegir de la galería";
   document.getElementById('input-descripcion-servicio').value = '';
   document.getElementById('registrar-servicio-error').classList.add('hidden');
   document.getElementById('registrar-servicio-exito').classList.remove('show');
@@ -1112,18 +1257,48 @@ function abrirRegistrarServicio(){
   ir('s-registrar-servicio');
 }
 
-function previsualizarFoto(){
+/* Redimensiona y comprime la imagen en el navegador antes de enviarla (ahorra espacio en Drive y datos móviles) */
+function comprimirImagen(file, maxAncho = 1280, calidad = 0.7){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = function(e){
+      const img = new Image();
+      img.onload = function(){
+        let w = img.width, h = img.height;
+        if (w > maxAncho){
+          h = Math.round(h * (maxAncho / w));
+          w = maxAncho;
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', calidad));
+      };
+      img.onerror = () => reject(new Error('No se pudo leer la imagen'));
+      img.src = e.target.result;
+    };
+    reader.onerror = () => reject(new Error('No se pudo leer el archivo'));
+    reader.readAsDataURL(file);
+  });
+}
+
+async function previsualizarFoto(){
   const input = document.getElementById('input-foto-servicio');
   if (!input.files || !input.files[0]) return;
-  const reader = new FileReader();
-  reader.onload = function(e){
-    fotoBase64Servicio = e.target.result;
+  const textoFoto = document.getElementById('texto-foto-servicio');
+  textoFoto.textContent = "Procesando imagen…";
+  try {
+    fotoBase64Servicio = await comprimirImagen(input.files[0]);
     const img = document.getElementById('preview-foto-servicio');
     img.src = fotoBase64Servicio;
     img.classList.remove('hidden');
-    document.getElementById('texto-foto-servicio').textContent = "Foto lista — toca para cambiarla";
-  };
-  reader.readAsDataURL(input.files[0]);
+    textoFoto.textContent = "Foto lista — toca para cambiarla";
+  } catch(err){
+    fotoBase64Servicio = null;
+    textoFoto.textContent = "No se pudo procesar la foto, intenta de nuevo";
+  }
 }
 
 async function enviarRegistroServicio(){
@@ -1165,7 +1340,7 @@ async function enviarRegistroServicio(){
       exitoBox.classList.add('show');
       document.getElementById('input-foto-servicio').value = '';
       document.getElementById('preview-foto-servicio').classList.add('hidden');
-      document.getElementById('texto-foto-servicio').textContent = "Tomar foto o subir imagen";
+      document.getElementById('texto-foto-servicio').textContent = "Tomar foto o elegir de la galería";
       document.getElementById('input-descripcion-servicio').value = '';
       fotoBase64Servicio = null;
     }
@@ -1183,6 +1358,7 @@ async function aplicarBrandingPrivada(){
   try {
     const res = await fetch(API_URL + "?accion=configPrivada");
     const config = await res.json();
+    configGlobal = config;
 
     if (config.nombrePrivada){
       document.title = config.nombrePrivada + " — Finanzas";
@@ -1234,11 +1410,6 @@ async function filtrarBitacoraProp(servicio){
   }
 }
 
-async function irBitacoraComite(){
-  ir('s-bitacora-comite');
-  filtrarBitacoraComite('Todos');
-}
-
 async function filtrarBitacoraComite(servicio){
   document.getElementById('com-bit-todos').classList.toggle('active', servicio === 'Todos');
   document.getElementById('com-bit-piscina').classList.toggle('active', servicio === 'Piscina');
@@ -1253,6 +1424,124 @@ async function filtrarBitacoraComite(servicio){
     renderBitacoraLista(data, 'comite-bitacora-lista');
   } catch(err){
     document.getElementById('comite-bitacora-lista').innerHTML = '<div class="error-box">Error de conexión.</div>';
+  }
+}
+
+/* ── Gastos del Comité (con comprobante) ── */
+function abrirRegistrarGasto(){
+  document.getElementById('input-foto-gasto').value = '';
+  document.getElementById('preview-foto-gasto').classList.add('hidden');
+  document.getElementById('texto-foto-gasto').textContent = "Tomar foto o elegir de la galería";
+  document.getElementById('select-categoria-gasto').value = 'Mantenimiento';
+  document.getElementById('input-descripcion-gasto').value = '';
+  document.getElementById('input-monto-gasto').value = '';
+  document.getElementById('registrar-gasto-error').classList.add('hidden');
+  document.getElementById('registrar-gasto-exito').classList.remove('show');
+  fotoBase64Gasto = null;
+  ir('s-registrar-gasto');
+}
+
+async function previsualizarFotoGasto(){
+  const input = document.getElementById('input-foto-gasto');
+  if (!input.files || !input.files[0]) return;
+  const textoFoto = document.getElementById('texto-foto-gasto');
+  textoFoto.textContent = "Procesando imagen…";
+  try {
+    fotoBase64Gasto = await comprimirImagen(input.files[0]);
+    const img = document.getElementById('preview-foto-gasto');
+    img.src = fotoBase64Gasto;
+    img.classList.remove('hidden');
+    textoFoto.textContent = "Foto lista — toca para cambiarla";
+  } catch(err){
+    fotoBase64Gasto = null;
+    textoFoto.textContent = "No se pudo procesar la foto, intenta de nuevo";
+  }
+}
+
+async function enviarRegistroGasto(){
+  const errBox = document.getElementById('registrar-gasto-error');
+  const exitoBox = document.getElementById('registrar-gasto-exito');
+  errBox.classList.add('hidden');
+  exitoBox.classList.remove('show');
+
+  const categoria = document.getElementById('select-categoria-gasto').value;
+  const descripcion = document.getElementById('input-descripcion-gasto').value.trim();
+  const monto = document.getElementById('input-monto-gasto').value;
+
+  if (!fotoBase64Gasto){ errBox.textContent = "Toma o sube una foto del comprobante."; errBox.classList.remove('hidden'); return; }
+  if (!descripcion){ errBox.textContent = "Describe el gasto."; errBox.classList.remove('hidden'); return; }
+  if (!monto || Number(monto) <= 0){ errBox.textContent = "Ingresa el monto del gasto."; errBox.classList.remove('hidden'); return; }
+
+  const btn = document.getElementById('btn-enviar-gasto');
+  btn.disabled = true;
+  btn.textContent = "Guardando…";
+
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        accion: "registrarGasto",
+        nombre: credComite.nombre,
+        clave: credComite.clave,
+        categoria: categoria,
+        descripcion: descripcion,
+        monto: monto,
+        foto: fotoBase64Gasto
+      })
+    });
+    const data = await res.json();
+    if (data.error){
+      errBox.textContent = data.error === "Sin permiso" ? "No tienes permiso de Comité." : data.error;
+      errBox.classList.remove('hidden');
+    } else {
+      exitoBox.textContent = "Gasto registrado correctamente.";
+      exitoBox.classList.add('show');
+      document.getElementById('input-foto-gasto').value = '';
+      document.getElementById('preview-foto-gasto').classList.add('hidden');
+      document.getElementById('texto-foto-gasto').textContent = "Tomar foto o elegir de la galería";
+      document.getElementById('input-descripcion-gasto').value = '';
+      document.getElementById('input-monto-gasto').value = '';
+      fotoBase64Gasto = null;
+    }
+  } catch(err){
+    errBox.textContent = "No se pudo conectar con el servidor.";
+    errBox.classList.remove('hidden');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Guardar gasto";
+  }
+}
+
+function renderGastosLista(data, contId){
+  let html = '';
+  const formatoMonto = m => "$" + Number(m).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  data.forEach(g => {
+    html += `
+      <div class="card" style="padding:14px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;">
+          <div style="font-weight:700; font-size:13.5px;">${g.categoria}</div>
+          <div style="font-size:11px; color:var(--azul-txt);">${g.fecha}</div>
+        </div>
+        <div style="font-size:12.5px; color:var(--tinta); margin-bottom:8px;">${g.descripcion}</div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div style="font-size:15px; font-weight:800; color:var(--dorado); font-family:'Playfair Display',serif;">${formatoMonto(g.monto)}</div>
+          ${g.foto ? `<a href="${g.foto}" target="_blank" style="font-size:11.5px; font-weight:700; color:var(--dorado);">Ver comprobante →</a>` : ''}
+        </div>
+        <div style="font-size:11px; color:var(--azul-txt); opacity:.75; margin-top:6px;">Registró: ${g.registradoPor}</div>
+      </div>
+    `;
+  });
+  document.getElementById(contId).innerHTML = html || '<div style="text-align:center;color:var(--azul-txt);font-size:13px;">Sin gastos registrados aún.</div>';
+}
+
+async function cargarGastos(contId){
+  try {
+    const res = await fetch(API_URL + "?accion=gastos");
+    const data = await res.json();
+    if (data.error){ document.getElementById(contId).innerHTML = '<div class="error-box">' + data.error + '</div>'; return; }
+    renderGastosLista(data, contId);
+  } catch(err){
+    document.getElementById(contId).innerHTML = '<div class="error-box">Error de conexión.</div>';
   }
 }
 
