@@ -148,6 +148,81 @@ body { font-family:'Segoe UI',Arial,sans-serif; background:var(--cielo-deep); co
   margin-top:1px; visibility:hidden;
 }
 .tabbar button.active .tab-dot { visibility:visible; }
+
+/* Mensajes de éxito */
+.msg { display:none; border-radius:10px; padding:12px 14px; font-size:13px; margin-bottom:12px; }
+.msg.show { display:block; }
+.msg.ok { background:var(--verde-bg); color:var(--verde); font-weight:600; }
+
+/* Pagos: botón principal, acciones, método, formulario */
+.input-base { width:100%; padding:12px 14px; border:1.5px solid var(--cielo-line); border-radius:10px;
+  font-size:14px; background:var(--cielo-mid); color:var(--tinta); }
+.hint { font-size:11.5px; color:var(--azul-txt); opacity:.85; margin-top:5px; line-height:1.4; }
+.link-guia { color:var(--dorado-hover); font-size:12.5px; font-weight:700; text-decoration:underline; cursor:pointer; }
+.pago-hero { background:linear-gradient(135deg, var(--dorado-claro), var(--dorado-med)); border:1.5px solid var(--dorado-hover);
+  border-radius:16px; padding:16px 18px; display:flex; align-items:center; gap:14px; cursor:pointer;
+  box-shadow:0 4px 16px rgba(184,147,62,.35); margin-bottom:10px; }
+.pago-hero:active { transform:scale(.98); background:var(--dorado-hover); }
+.pago-hero .ph-icon { font-size:26px; }
+.pago-hero .ph-titulo { font-family:'Playfair Display',serif; font-size:17px; font-weight:700; color:var(--tinta); }
+.pago-hero .ph-sub { font-size:11.5px; color:var(--tinta); opacity:.75; margin-top:2px; }
+.pago-hero .ph-flecha { margin-left:auto; font-size:24px; color:var(--tinta); }
+.acciones-2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; }
+.accion-card { background:#fff; border:1px solid var(--cielo-line); border-radius:14px; padding:12px 8px; text-align:center; cursor:pointer; }
+.accion-card:active { background:var(--cielo-mid); border-color:var(--dorado-b); }
+.accion-card .ac-icon { font-size:20px; }
+.accion-card .ac-txt { font-size:11.5px; font-weight:700; margin-top:4px; color:var(--tinta); }
+.pill { display:inline-block; min-width:20px; padding:1px 7px; border-radius:20px; background:var(--rojo); color:#fff; font-size:11px; font-weight:700; margin-left:4px; }
+.pill.cero { background:var(--gris-btn); opacity:.55; }
+.metodo-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.metodo-btn { background:#fff; border:1.5px solid var(--cielo-line); border-radius:14px; padding:16px 8px; text-align:center;
+  cursor:pointer; font-weight:700; font-size:13.5px; color:var(--azul-txt); }
+.metodo-btn .mb-icon { font-size:26px; display:block; margin-bottom:6px; }
+.metodo-btn.active { background:linear-gradient(135deg, var(--dorado-claro), var(--dorado-med)); border-color:var(--dorado-hover); color:var(--tinta); }
+.badge.Pendiente { background:var(--dorado-soft); color:var(--dorado-hover); }
+.badge.Aprobado { background:var(--verde-bg); color:var(--verde); }
+.badge.Rechazado { background:var(--rojo-bg); color:var(--rojo); }
+.btn-gris { background:var(--gris-btn); color:#fff; border:none; border-radius:11px; padding:12px; font-size:13.5px; font-weight:700; cursor:pointer; }
+.btn-gris:active { background:var(--gris-btn-d); }
+.barra { height:12px; border-radius:8px; background:var(--rojo-bg); overflow:hidden; }
+.barra > div { height:100%; background:linear-gradient(90deg, var(--verde), #4CAF86); border-radius:8px; }
+.guia-paso { display:flex; gap:12px; margin-bottom:12px; align-items:flex-start; }
+.guia-num { width:26px; height:26px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(135deg, var(--dorado-claro), var(--dorado-med)); border:1px solid var(--dorado-hover); font-weight:700; font-size:13px; }
+.guia-txt { font-size:13.5px; line-height:1.45; color:var(--tinta); }
+.pago-fila { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--cielo-mid); gap:10px; }
+.pago-fila:last-child { border-bottom:none; }
+.marcador-unidades { display:flex; align-items:center; background:#fff; border:1.5px solid var(--cielo-line); border-radius:16px; padding:14px 6px; margin-bottom:14px; box-shadow:0 2px 10px rgba(30,92,130,.06); }
+.mu-col { flex:1; text-align:center; }
+.mu-num { font-family:'Playfair Display',serif; font-size:34px; font-weight:800; line-height:1; }
+.mu-lbl { font-size:11.5px; letter-spacing:1.2px; text-transform:uppercase; color:var(--azul-txt); margin-top:6px; }
+.mu-sep { width:1px; align-self:stretch; background:var(--cielo-line); }
+
+/* SELECTOR DE DEPTO POR TOQUES */
+.sd-titulo { font-size:13px; color:var(--azul-txt); margin-bottom:10px; text-align:center; }
+.sd-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; }
+.sd-tile { background:#fff; border:1.5px solid var(--cielo-line); border-radius:14px; padding:16px 4px; text-align:center;
+  font-family:'Playfair Display',serif; font-size:20px; font-weight:700; color:var(--tinta); cursor:pointer; user-select:none; }
+.sd-tile:active { background:var(--dorado-soft); border-color:var(--dorado); }
+.sd-tile small { display:block; font-family:'Segoe UI',Arial,sans-serif; font-size:10px; font-weight:400; color:var(--azul-txt); opacity:.75; margin-top:2px; letter-spacing:.4px; }
+.sd-dos { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.sd-dos .sd-tile { padding:34px 6px; font-size:30px; }
+.sd-nivel { display:flex; align-items:center; gap:14px; background:#fff; border:1.5px solid var(--cielo-line); padding:14px 16px; cursor:pointer; user-select:none; margin-bottom:-1.5px; }
+.sd-nivel:first-child { border-radius:14px 14px 0 0; }
+.sd-nivel:last-child { border-radius:0 0 14px 14px; }
+.sd-nivel:only-child { border-radius:14px; }
+.sd-nivel:active { background:var(--dorado-soft); border-color:var(--dorado); position:relative; z-index:1; }
+.sd-letra { width:42px; height:42px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(135deg, var(--dorado-claro), var(--dorado-med)); border:1px solid var(--dorado-hover);
+  font-family:'Playfair Display',serif; font-size:20px; font-weight:700; color:var(--tinta); }
+.sd-nivel-txt { font-size:15px; color:var(--tinta); }
+.sd-nivel-txt small { display:block; font-size:11.5px; color:var(--azul-txt); opacity:.75; }
+.sd-atras { background:none; border:none; color:var(--azul-txt); font-size:14px; font-weight:600; padding:4px 0 10px; cursor:pointer; }
+.sd-listo { display:flex; align-items:center; justify-content:space-between; gap:10px; background:var(--verde-bg); border:1.5px solid var(--verde); border-radius:14px; padding:12px 16px; }
+.sd-listo b { font-family:'Playfair Display',serif; font-size:22px; color:var(--tinta); }
+.sd-listo button { background:none; border:none; color:var(--azul-txt); font-weight:600; font-size:14px; cursor:pointer; padding:6px; }
+.sd-chips { display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin-top:8px; max-height:260px; overflow:auto; }
+.sd-chips .sd-tile { font-size:15px; padding:12px 2px; }
 </style>
 </head>
 <body>
@@ -177,8 +252,8 @@ body { font-family:'Segoe UI',Arial,sans-serif; background:var(--cielo-deep); co
     <div class="card">
       <div class="card-title">Iniciar sesión</div>
       <div class="fg">
-        <label>Unidad</label>
-        <select id="select-unidad"></select>
+        <label>Tu depto</label>
+        <div id="sel-prop" class="sd"></div>
       </div>
       <div class="fg">
         <label>Clave de acceso</label>
@@ -258,12 +333,13 @@ body { font-family:'Segoe UI',Arial,sans-serif; background:var(--cielo-deep); co
         <input type="text" id="input-nuevo-nombre" placeholder="Nombre del trabajador" style="width:100%; padding:12px 14px; border:1.5px solid var(--cielo-line); border-radius:10px; font-size:14px; background:var(--cielo-mid); color:var(--tinta);">
       </div>
       <div class="fg">
-        <label>Servicio asignado</label>
+        <label>Servicio o función asignada</label>
         <select id="select-nuevo-rol" style="width:100%; padding:12px 14px; border:1.5px solid var(--cielo-line); border-radius:10px; font-size:14px; background:var(--cielo-mid); color:var(--tinta);">
           <option value="Piscina">Piscina</option>
           <option value="Áreas comunes">Áreas comunes</option>
           <option value="Jardinería">Jardinería</option>
           <option value="Pintura">Pintura</option>
+          <option value="Cobranza">Cobranza (recibe efectivo)</option>
         </select>
       </div>
       <div id="agregar-personal-error" class="error-box hidden"></div>
@@ -294,7 +370,7 @@ body { font-family:'Segoe UI',Arial,sans-serif; background:var(--cielo-deep); co
 <div class="screen" id="s-login-personal">
   <div class="app-header">
     <button class="back" onclick="ir('s-inicio')">←</button>
-    <div class="header-title"><h1>Personal</h1><p>Registrar actividad realizada</p></div>
+    <div class="header-title"><h1>Personal</h1><p>Actividad realizada o cobranza</p></div>
   </div>
   <div class="content">
     <div class="card">
@@ -396,6 +472,84 @@ body { font-family:'Segoe UI',Arial,sans-serif; background:var(--cielo-deep); co
   </div>
 </div>
 
+<!-- REGISTRAR PAGO (propietario / cobranza / comité) -->
+<div class="screen" id="s-registrar-pago">
+  <div class="app-header">
+    <button class="back" onclick="volverDePago()">←</button>
+    <div class="header-title"><h1 id="pago-titulo">Registrar pago</h1><p id="pago-sub">Cuota de mantenimiento</p></div>
+  </div>
+  <div class="content">
+    <div id="pago-form">
+      <div class="card" id="pago-card-metodo">
+        <div class="card-title" id="pago-card-metodo-titulo">1. ¿Cómo pagaste?</div>
+        <div class="metodo-grid">
+          <div class="metodo-btn" id="metodo-efectivo" onclick="elegirMetodoPago('Efectivo')"><span class="mb-icon">💵</span>Efectivo</div>
+          <div class="metodo-btn" id="metodo-transferencia" onclick="elegirMetodoPago('Transferencia')"><span class="mb-icon">🏦</span>Transferencia</div>
+        </div>
+      </div>
+
+      <div class="card hidden" id="pago-detalle">
+        <div class="card-title" id="pago-detalle-titulo">2. Datos del pago</div>
+
+        <div class="fg hidden" id="fg-pago-unidad">
+          <label>Depto</label>
+          <div id="sel-pago" class="sd"></div>
+        </div>
+
+        <div class="fg">
+          <label>Mes que se paga</label>
+          <select id="pago-select-mes" class="input-base" onchange="alCambiarMesPago()"></select>
+          <div class="hint" id="pago-hint-mes"></div>
+        </div>
+
+        <div class="fg">
+          <label>Monto pagado (MXN)</label>
+          <input type="number" id="pago-monto" class="input-base" inputmode="decimal" min="0" step="0.01" placeholder="Ej. 750">
+        </div>
+
+        <div class="fg">
+          <label id="pago-label-ref">Clave de rastreo o folio del comprobante</label>
+          <input type="text" id="pago-ref" class="input-base" maxlength="60" autocomplete="off" placeholder="">
+          <div class="hint" id="pago-hint-ref"></div>
+        </div>
+
+        <div class="hint" style="margin-bottom:12px;">🔒 No escribas nombres ni números de cuenta. Solo el folio.</div>
+        <div id="pago-error" class="error-box hidden"></div>
+        <button class="btn-primary" style="width:100%;" id="btn-enviar-pago" onclick="enviarPago()">Enviar pago</button>
+      </div>
+
+      <div style="text-align:center; margin-top:4px;"><a class="link-guia" onclick="abrirGuia(pagoModo)">¿Cómo funciona?</a></div>
+    </div>
+    <div id="pago-exito" class="hidden"></div>
+  </div>
+</div>
+
+<!-- PAGOS POR APROBAR (comité) -->
+<div class="screen" id="s-pagos-revision">
+  <div class="app-header">
+    <button class="back" onclick="volverAComite(true)">←</button>
+    <div class="header-title"><h1>Pagos por aprobar</h1><p>Valida el folio en tu cuenta</p></div>
+  </div>
+  <div class="content">
+    <div style="display:flex; gap:8px; margin-bottom:12px;">
+      <button class="filtro-btn active" id="pr-Pendiente" onclick="filtrarPagosRevision('Pendiente')">Pendientes</button>
+      <button class="filtro-btn" id="pr-Aprobado" onclick="filtrarPagosRevision('Aprobado')">Aprobados</button>
+      <button class="filtro-btn" id="pr-Rechazado" onclick="filtrarPagosRevision('Rechazado')">Rechazados</button>
+    </div>
+    <input type="text" id="pagos-buscar" class="input-base" placeholder="Buscar depto o folio" oninput="renderPagosRevision()" autocomplete="off" style="margin-bottom:12px; background:#fff;">
+    <div id="pagos-revision-lista"><div class="loader">Cargando…</div></div>
+  </div>
+</div>
+
+<!-- GUÍA RÁPIDA DE PAGOS -->
+<div class="screen" id="s-guia-pago">
+  <div class="app-header">
+    <button class="back" onclick="ir(guiaVolver)">←</button>
+    <div class="header-title"><h1>Guía rápida</h1><p>Cómo registrar un pago</p></div>
+  </div>
+  <div class="content" id="guia-contenido"></div>
+</div>
+
 <!-- REGLAMENTO -->
 <div class="screen" id="s-reglamento">
   <div class="app-header">
@@ -414,7 +568,7 @@ body { font-family:'Segoe UI',Arial,sans-serif; background:var(--cielo-deep); co
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbyFH7o4YVH5uzz6v7laFopq7Qcp7N2ceA6cC5r173OuUuPM8ove20FsLHUiehjEgLuh/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwEFsUtApUwlrmzH2I5U_ZUBtirrI3OOVPYtFlU7hOZZZr9RuuJKZXtRn6FZ96ZNdvZ/exec";
 let dataUnidad = null;   // datos de UN solo propietario logueado
 let dataComite = null;   // datos completos, solo tras login válido del comité
 let credComite = { nombre: "", clave: "" }; // credenciales guardadas tras login, para reusar en otras pantallas
@@ -668,6 +822,7 @@ function renderModuloComite(data){
     });
 
     cont.innerHTML = `
+      ${construirBloquePagoComite()}
       <div style="display:flex; gap:8px; margin-bottom:14px;">
         <div class="card" style="flex:1; text-align:center; cursor:pointer; padding:14px 6px;" onclick="irAgregarPersonal()">
           <div style="font-size:20px;">👷</div>
@@ -693,6 +848,8 @@ function renderModuloComite(data){
       <div id="lista-unidades-comite"></div>
     `;
     renderListaUnidadesComite(data);
+    cargarPillPendientes();
+    cargarResumenMorosidad();
   }
 
   else if (moduloComiteActivo === 'bitacora'){
@@ -718,7 +875,7 @@ function renderModuloComite(data){
       <div class="seccion-titulo">Gastos registrados</div>
       <div id="comite-gastos-lista"><div class="loader">Cargando…</div></div>
     `;
-    cargarGastos('comite-gastos-lista');
+    cargarGastos('comite-gastos-lista', { nombre: credComite.nombre, clave: credComite.clave });
   }
 }
 
@@ -821,24 +978,146 @@ function verDetalle(unidad){
 }
 
 /* ── Login Propietario ── */
-async function prepararSelectUnidades(){
-  const sel = document.getElementById('select-unidad');
-  sel.innerHTML = '<option>Cargando…</option>';
-  try {
+/* ── Selector de depto por toques ──
+   Pares de edificios → edificio → nivel (A = primer nivel).
+   Se arma solo con la lista de deptos del Sheet (formato "4-A" o "4A").
+   Si algún depto no sigue ese formato, cae a un buscador con botones. */
+const EDIFICIOS_POR_BLOQUE = 2;           // cada bloque junta 2 edificios
+const NIVELES_DEPTO = { A:'1er nivel', B:'2º nivel', C:'3er nivel', D:'4º nivel' };
+let _unidadesCache = null;
+
+async function obtenerUnidades(){
+  if (!_unidadesCache){
     const res = await fetch(API_URL + "?accion=listaUnidades");
     const lista = await res.json();
-    sel.innerHTML = lista.map(u => `<option value="${u}">${u}</option>`).join('');
-  } catch(err){
-    sel.innerHTML = '<option>Error al cargar</option>';
+    if (!Array.isArray(lista)) throw new Error('lista');
+    _unidadesCache = lista.map(String);
   }
+  return _unidadesCache;
+}
+
+function parsearUnidad(u){
+  const m = /^\s*(\d+)\s*[-–.]?\s*([A-Za-z])\s*$/.exec(u);
+  return m ? { n: parseInt(m[1], 10), l: m[2].toUpperCase() } : null;
+}
+
+function crearSelectorDepto(idContenedor, alCambiar){
+  const cont = document.getElementById(idContenedor);
+  const est = { paso:'cargando', bloques:[], porEdif:{}, lista:[], plano:false, bloque:null, edif:null, valor:'' };
+
+  function armar(lista){
+    est.lista = lista;
+    est.porEdif = {};
+    let todos = true;
+    lista.forEach(u => {
+      const p = parsearUnidad(u);
+      if (!p){ todos = false; return; }
+      (est.porEdif[p.n] = est.porEdif[p.n] || []).push({ l:p.l, u:u });
+    });
+    est.plano = !todos || !lista.length;
+    const nums = Object.keys(est.porEdif).map(Number).sort((a, b) => a - b);
+    est.bloques = [];
+    for (let i = 0; i < nums.length; i += EDIFICIOS_POR_BLOQUE) est.bloques.push(nums.slice(i, i + EDIFICIOS_POR_BLOQUE));
+    est.paso = est.plano ? 'plano' : 'bloques';
+  }
+
+  function dibujar(){
+    if (est.paso === 'cargando'){ cont.innerHTML = '<div class="sd-titulo">Cargando…</div>'; return; }
+    if (est.paso === 'error'){ cont.innerHTML = '<div class="sd-titulo">No se pudo cargar la lista. <a href="#" data-acc="reintentar" style="color:var(--azul-txt);font-weight:600;">Reintentar</a></div>'; return; }
+    if (est.paso === 'listo'){
+      cont.innerHTML = '<div class="sd-listo"><div><div style="font-size:11px;color:var(--azul-txt);">Depto elegido</div><b>' + esc(est.valor) + '</b></div><button type="button" data-acc="cambiar">Cambiar</button></div>';
+      return;
+    }
+    if (est.paso === 'bloques'){
+      cont.innerHTML = '<div class="sd-titulo">Toca tu edificio</div><div class="sd-grid">' +
+        est.bloques.map((b, i) => '<div class="sd-tile" data-acc="bloque" data-i="' + i + '">' + b.join(' · ') + '</div>').join('') + '</div>';
+      return;
+    }
+    if (est.paso === 'edif'){
+      const b = est.bloques[est.bloque];
+      if (b.length === 1){ est.edif = b[0]; est.paso = 'nivel'; return dibujar(); }
+      cont.innerHTML = '<button type="button" class="sd-atras" data-acc="atras">← Volver</button><div class="sd-titulo">¿Cuál es tu edificio?</div><div class="sd-dos">' +
+        b.map(n => '<div class="sd-tile" data-acc="edif" data-n="' + n + '"><small>EDIFICIO</small>' + n + '</div>').join('') + '</div>';
+      return;
+    }
+    if (est.paso === 'nivel'){
+      const filas = (est.porEdif[est.edif] || []).slice().sort((a, b) => b.l.localeCompare(a.l)); // D arriba, A abajo, como el edificio
+      cont.innerHTML = '<button type="button" class="sd-atras" data-acc="atras">← Volver</button><div class="sd-titulo">Edificio ' + est.edif + ' · ¿en qué nivel vives?</div>' +
+        '<div class="sd-pila">' + filas.map(f => '<div class="sd-nivel" data-acc="depto" data-u="' + esc(f.u) + '"><span class="sd-letra">' + esc(f.l) + '</span><span class="sd-nivel-txt">Depto ' + esc(f.u) + '<small>' + (NIVELES_DEPTO[f.l] || '') + '</small></span></div>').join('') + '</div>';
+      return;
+    }
+    // plano: buscador + botones (solo si los deptos no siguen el formato 4-A)
+    cont.innerHTML = '<input type="text" class="input-base" data-acc="buscar" placeholder="Escribe tu depto" autocomplete="off"><div class="sd-chips" data-res="1"></div>';
+    pintarPlano('');
+  }
+
+  function pintarPlano(q){
+    const res = cont.querySelector('[data-res]');
+    if (!res) return;
+    const l = est.lista.filter(u => !q || u.toLowerCase().indexOf(q) >= 0).slice(0, 80);
+    res.innerHTML = l.length ? l.map(u => '<div class="sd-tile" data-acc="depto" data-u="' + esc(u) + '">' + esc(u) + '</div>').join('') : '<div class="sd-titulo" style="grid-column:1/-1;">Sin coincidencias</div>';
+  }
+
+  function elegir(u){
+    est.valor = u;
+    est.paso = 'listo';
+    dibujar();
+    if (alCambiar) alCambiar(u);
+  }
+
+  cont.addEventListener('click', ev => {
+    const t = ev.target.closest('[data-acc]');
+    if (!t || !cont.contains(t)) return;
+    const acc = t.getAttribute('data-acc');
+    if (acc === 'reintentar'){ ev.preventDefault(); api.reiniciar(); return; }
+    if (acc === 'bloque'){ est.bloque = parseInt(t.getAttribute('data-i'), 10); est.paso = 'edif'; dibujar(); }
+    else if (acc === 'edif'){ est.edif = parseInt(t.getAttribute('data-n'), 10); est.paso = 'nivel'; dibujar(); }
+    else if (acc === 'depto'){ elegir(t.getAttribute('data-u')); }
+    else if (acc === 'atras'){
+      if (est.paso === 'nivel' && est.bloques[est.bloque] && est.bloques[est.bloque].length > 1) est.paso = 'edif';
+      else est.paso = 'bloques';
+      dibujar();
+    }
+    else if (acc === 'cambiar'){
+      est.valor = '';
+      est.paso = est.plano ? 'plano' : 'bloques';
+      dibujar();
+      if (alCambiar) alCambiar('');
+    }
+  });
+  cont.addEventListener('input', ev => {
+    if (ev.target.getAttribute && ev.target.getAttribute('data-acc') === 'buscar') pintarPlano(ev.target.value.trim().toLowerCase());
+  });
+
+  const api = {
+    get valor(){ return est.valor; },
+    async reiniciar(){
+      est.valor = '';
+      est.paso = 'cargando';
+      dibujar();
+      try { armar(await obtenerUnidades()); }
+      catch(err){ est.paso = 'error'; }
+      dibujar();
+    }
+  };
+  return api;
+}
+
+let selPropietario = null;
+function prepararSelectUnidades(){
+  if (!selPropietario) selPropietario = crearSelectorDepto('sel-prop');
+  document.getElementById('prop-login-error').classList.add('hidden');
+  document.getElementById('input-clave-prop').value = '';
+  return selPropietario.reiniciar();
 }
 
 async function entrarPropietario(){
-  const unidad = document.getElementById('select-unidad').value;
+  const unidad = selPropietario ? selPropietario.valor : '';
   const clave = document.getElementById('input-clave-prop').value.trim();
   const errBox = document.getElementById('prop-login-error');
   errBox.classList.add('hidden');
 
+  if (!unidad){ errBox.textContent = "Primero toca tu edificio y tu depto."; errBox.classList.remove('hidden'); return; }
   if (!clave){ errBox.textContent = "Ingresa tu clave."; errBox.classList.remove('hidden'); return; }
 
   try {
@@ -947,7 +1226,12 @@ function renderTabBarProp(){
     { key:'gastos',    label:'Gastos',   icon:'💵', planMin:'Plus' },
   ].filter(t => ORDEN_PLAN[configGlobal.plan] >= ORDEN_PLAN[t.planMin]);
 
-  document.getElementById('prop-tabbar').innerHTML = tabsDisponibles.map(t => `
+  // Unidad con adeudo: solo ve su saldo, sin menú de secciones
+  const barra = document.getElementById('prop-tabbar');
+  if (dataUnidad && dataUnidad.moroso){ barra.innerHTML = ''; barra.classList.add('hidden'); return; }
+  barra.classList.remove('hidden');
+
+  barra.innerHTML = tabsDisponibles.map(t => `
     <button class="${moduloPropActivo === t.key ? 'active' : ''}" onclick="cambiarModuloProp('${t.key}')">
       <span class="tab-icon">${t.icon}</span>${t.label}
       <span class="tab-dot"></span>
@@ -956,6 +1240,7 @@ function renderTabBarProp(){
 }
 
 function cambiarModuloProp(key){
+  if (dataUnidad && dataUnidad.moroso) key = 'finanzas';
   moduloPropActivo = key;
   renderTabBarProp();
   renderModuloProp(dataUnidad);
@@ -963,9 +1248,14 @@ function cambiarModuloProp(key){
 
 function renderModuloProp(u){
   const cont = document.getElementById('prop-content');
+  if (u.moroso) moduloPropActivo = 'finanzas';
 
   if (moduloPropActivo === 'finanzas'){
-    let html = '';
+    let html = u.moroso ? '' : construirMarcadorUnidades(u.resumen);
+    html += construirBloquePagoProp(u);
+    if (u.moroso){
+      html += `<div style="text-align:center; font-size:12px; color:var(--azul-txt); opacity:.8; margin:-4px 0 12px;">Al regularizar tus pagos se habilitan el resto de las secciones.</div>`;
+    }
     if (sesionUnidad.tipo === "usuario" && sesionUnidad.apodo){
       html += `<div style="text-align:center; font-size:13px; color:var(--azul-txt); margin-bottom:10px;">Bienvenido, ${sesionUnidad.apodo}</div>`;
     }
@@ -985,6 +1275,7 @@ function renderModuloProp(u){
     html += construirFiltroHistorial('prop');
     cont.innerHTML = html;
     filtrarHistorial('prop', 'todos');
+    cargarPagosRecientesProp();
   }
 
   else if (moduloPropActivo === 'usuarios'){
@@ -1017,7 +1308,7 @@ function renderModuloProp(u){
       <div style="font-size:11.5px; color:var(--azul-txt); opacity:.75; margin:-4px 0 10px;">Registrados por el comité, con comprobante.</div>
       <div id="prop-gastos-lista"><div class="loader">Cargando…</div></div>
     `;
-    cargarGastos('prop-gastos-lista');
+    cargarGastos('prop-gastos-lista', { unidad: sesionUnidad.unidad, clave: sesionUnidad.clave });
   }
 }
 
@@ -1241,7 +1532,8 @@ async function entrarPersonal(){
       return;
     }
     credPersonal = { nombre: data.nombre, clave, rol: data.rol };
-    abrirRegistrarServicio();
+    if (String(data.rol).trim().toLowerCase() === "cobranza") abrirRegistrarPago('cobranza');
+    else abrirRegistrarServicio();
   } catch(err){
     errBox.textContent = "No se pudo conectar con el servidor.";
     errBox.classList.remove('hidden');
@@ -1565,15 +1857,526 @@ function renderGastosLista(data, contId){
   document.getElementById(contId).innerHTML = html || '<div style="text-align:center;color:var(--azul-txt);font-size:13px;">Sin gastos registrados aún.</div>';
 }
 
-async function cargarGastos(contId){
+async function cargarGastos(contId, creds){
   try {
-    const res = await fetch(API_URL + "?accion=gastos");
+    const res = await fetch(API_URL + "?accion=gastos&" + aQuery(creds || {}));
     const data = await res.json();
     if (data.error){ document.getElementById(contId).innerHTML = '<div class="error-box">' + data.error + '</div>'; return; }
     renderGastosLista(data, contId);
   } catch(err){
     document.getElementById(contId).innerHTML = '<div class="error-box">Error de conexión.</div>';
   }
+}
+
+/* ══════════════ PAGOS: registro, aprobación, resumen y guía ══════════════ */
+function esc(s){
+  return String(s === null || s === undefined ? "" : s)
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+}
+function fmtMXN(n){
+  return "$" + Number(n || 0).toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+}
+function aQuery(obj){
+  return Object.keys(obj).map(k => k + "=" + encodeURIComponent(obj[k])).join("&");
+}
+
+let pagoModo = 'propietario';       // 'propietario' | 'cobranza' | 'comite'
+let pagoMetodo = '';                // 'Efectivo' | 'Transferencia'
+let selPago = null;
+let pagoUnidadCargada = '';
+let pagoMesesCache = [];
+let pagoHuboCambios = false;
+let guiaVolver = 's-inicio';
+let pagosRevisionCache = [];
+let pagosRevisionFiltro = 'Pendiente';
+let resumenMorosidadCache = null;
+
+/* ── Marcador solo con números: morosos vs. activos (sin deptos) ── */
+function construirMarcadorUnidades(r){
+  if (!r || typeof r.morosos !== 'number' || typeof r.activos !== 'number') return '';
+  return `
+    <div class="marcador-unidades">
+      <div class="mu-col"><div class="mu-num" style="color:var(--rojo);">${r.morosos}</div><div class="mu-lbl">Morosos</div></div>
+      <div class="mu-sep"></div>
+      <div class="mu-col"><div class="mu-num" style="color:var(--verde);">${r.activos}</div><div class="mu-lbl">Activos</div></div>
+    </div>`;
+}
+
+/* ── Bloques de arriba en Finanzas ── */
+function construirBloquePagoProp(u){
+  const hayAdeudo = u.historial.some(h => h.estado === 'Adeudo');
+  let html = '';
+  if (hayAdeudo){
+    html += `
+      <div class="pago-hero" onclick="abrirRegistrarPago('propietario')">
+        <div class="ph-icon">🧾</div>
+        <div><div class="ph-titulo">Registrar mi pago</div><div class="ph-sub">Efectivo o transferencia · toma 1 minuto</div></div>
+        <div class="ph-flecha">›</div>
+      </div>`;
+  } else {
+    html += `<div class="msg ok show" style="text-align:center;">🎉 Estás al corriente, no tienes pagos pendientes.</div>`;
+  }
+  html += `<div style="text-align:center; margin:-2px 0 12px;"><a class="link-guia" onclick="abrirGuia('propietario')">¿Cómo registro mi pago?</a></div>`;
+  html += `<div id="prop-pagos-recientes"></div>`;
+  return html;
+}
+
+async function cargarPagosRecientesProp(){
+  const cont = document.getElementById('prop-pagos-recientes');
+  if (!cont) return;
+  try {
+    const res = await fetch(API_URL + "?accion=pagosUnidad&" + aQuery({ unidad: sesionUnidad.unidad, clave: sesionUnidad.clave }));
+    const data = await res.json();
+    const cont2 = document.getElementById('prop-pagos-recientes');
+    if (!cont2 || data.error || !data.length){ if (cont2) cont2.innerHTML = ''; return; }
+    const filas = data.slice(0, 5).map(p => `
+      <div class="pago-fila">
+        <div>
+          <div style="font-size:13.5px; font-weight:700;">${periodoLegible(p.periodo)} · ${fmtMXN(p.monto)}</div>
+          <div class="hint" style="margin-top:2px;">${p.metodo === 'Efectivo' ? '💵' : '🏦'} ${esc(p.metodo)}${p.estatus === 'Rechazado' && p.nota ? ' · Motivo: ' + esc(p.nota) : ''}</div>
+        </div>
+        <span class="badge ${esc(p.estatus)}">${p.estatus === 'Pendiente' ? 'En revisión' : esc(p.estatus)}</span>
+      </div>`).join('');
+    cont2.innerHTML = `<div class="card"><div class="card-title">Mis pagos registrados</div>${filas}</div>`;
+  } catch(err){ /* si falla, simplemente no se muestra la lista */ }
+}
+
+function construirBloquePagoComite(){
+  return `
+    <div class="pago-hero" onclick="abrirRegistrarPago('comite')">
+      <div class="ph-icon">🧾</div>
+      <div><div class="ph-titulo">Registrar pago</div><div class="ph-sub">Queda aprobado al instante</div></div>
+      <div class="ph-flecha">›</div>
+    </div>
+    <div class="acciones-2">
+      <div class="accion-card" onclick="irPagosRevision()">
+        <div class="ac-icon">📥</div>
+        <div class="ac-txt">Por aprobar <span class="pill cero" id="pill-pendientes">·</span></div>
+      </div>
+      <div class="accion-card" onclick="abrirGuia('comite')">
+        <div class="ac-icon">📖</div>
+        <div class="ac-txt">Guía rápida</div>
+      </div>
+    </div>
+    <div id="card-cobranza-mes"></div>`;
+}
+
+async function cargarPillPendientes(){
+  try {
+    const res = await fetch(API_URL + "?accion=pagos&" + aQuery({ nombre: credComite.nombre, clave: credComite.clave, estatus: 'Pendiente' }));
+    const data = await res.json();
+    const pill = document.getElementById('pill-pendientes');
+    if (!pill || data.error) return;
+    pill.textContent = data.length;
+    pill.classList.toggle('cero', data.length === 0);
+  } catch(err){}
+}
+
+/* ── Cobranza del mes: cuántos pagaron y cuántos no, sin mostrar deptos ── */
+async function cargarResumenMorosidad(){
+  try {
+    const res = await fetch(API_URL + "?accion=resumenMorosidad&" + aQuery({ nombre: credComite.nombre, clave: credComite.clave }));
+    const data = await res.json();
+    const cont = document.getElementById('card-cobranza-mes');
+    if (!cont) return;
+    if (data.error || !data.meses || !data.meses.length){ cont.innerHTML = ''; return; }
+    resumenMorosidadCache = data;
+    const recientes = data.meses.slice().reverse();
+    cont.innerHTML = `
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:12px;">
+          <div class="card-title" style="margin:0;">Cobranza del mes</div>
+          <select id="sel-mes-cobranza" onchange="pintarCobranzaMes(this.value)" class="input-base" style="width:auto; padding:8px 10px; font-size:12.5px;">
+            ${recientes.map(m => `<option value="${esc(m.periodo)}">${periodoLegible(m.periodo)}</option>`).join('')}
+          </select>
+        </div>
+        <div id="cobranza-detalle"></div>
+        <div class="hint" style="margin-top:10px;">Solo cifras: no se muestran deptos.</div>
+      </div>`;
+    pintarCobranzaMes(recientes[0].periodo);
+  } catch(err){}
+}
+
+function pintarCobranzaMes(periodo){
+  const m = resumenMorosidadCache && resumenMorosidadCache.meses.find(x => x.periodo === periodo);
+  const box = document.getElementById('cobranza-detalle');
+  if (!m || !box) return;
+  const pct = m.total ? Math.round(m.pagados * 100 / m.total) : 0;
+  box.innerHTML = `
+    <div style="display:flex; align-items:baseline; justify-content:space-between; margin-bottom:8px;">
+      <div><span style="font-family:'Playfair Display',serif; font-size:30px; font-weight:700;">${m.pagados}</span>
+        <span style="font-size:13px; color:var(--azul-txt);"> de ${m.total} han pagado</span></div>
+      <div style="font-family:'Playfair Display',serif; font-size:20px; font-weight:700; color:var(--verde);">${pct}%</div>
+    </div>
+    <div class="barra"><div style="width:${pct}%;"></div></div>
+    <div style="display:flex; justify-content:space-between; margin-top:10px; font-size:12.5px; font-weight:700;">
+      <span style="color:var(--verde);">✔ Al corriente: ${m.pagados}</span>
+      <span style="color:var(--rojo);">✖ Sin pagar: ${m.adeudos}</span>
+    </div>`;
+}
+
+/* ── Formulario de registro de pago ── */
+function pagoUnidadActual(){
+  if (pagoModo === 'propietario') return sesionUnidad.unidad;
+  return selPago ? selPago.valor : '';
+}
+function pagoCredenciales(unidad){
+  if (pagoModo === 'propietario') return { unidad: sesionUnidad.unidad, clave: sesionUnidad.clave };
+  if (pagoModo === 'cobranza') return { nombre: credPersonal.nombre, clave: credPersonal.clave, unidad: unidad };
+  return { nombre: credComite.nombre, clave: credComite.clave, unidad: unidad };
+}
+
+async function abrirRegistrarPago(modo){
+  pagoModo = modo;
+  pagoMetodo = '';
+  pagoUnidadCargada = '';
+  pagoMesesCache = [];
+  pagoHuboCambios = false;
+  const esProp = modo === 'propietario';
+  const esCobranza = modo === 'cobranza';
+
+  document.getElementById('pago-titulo').textContent = esProp ? "Registrar mi pago" : (esCobranza ? "Registrar efectivo" : "Registrar pago");
+  document.getElementById('pago-sub').textContent = esProp ? "Depto " + sesionUnidad.unidad : (esCobranza ? "Hola, " + credPersonal.nombre : "Queda aprobado al instante");
+  document.getElementById('pago-card-metodo-titulo').textContent = esProp ? "1. ¿Cómo pagaste?" : "1. ¿Cómo se pagó?";
+  document.getElementById('pago-card-metodo').classList.toggle('hidden', esCobranza);
+  document.getElementById('metodo-efectivo').classList.remove('active');
+  document.getElementById('metodo-transferencia').classList.remove('active');
+  document.getElementById('pago-detalle').classList.add('hidden');
+  document.getElementById('pago-exito').classList.add('hidden');
+  document.getElementById('pago-form').classList.remove('hidden');
+  document.getElementById('pago-error').classList.add('hidden');
+  document.getElementById('pago-monto').value = '';
+  document.getElementById('pago-ref').value = '';
+  document.getElementById('pago-select-mes').innerHTML = esProp ? '' : '<option value="">Primero elige el depto</option>';
+  document.getElementById('pago-hint-mes').textContent = '';
+  document.getElementById('fg-pago-unidad').classList.toggle('hidden', esProp);
+
+  ir('s-registrar-pago');
+
+  if (esCobranza) elegirMetodoPago('Efectivo');
+  if (esProp) cargarMesesPago();
+  else {
+    if (!selPago) selPago = crearSelectorDepto('sel-pago', () => cargarMesesPago());
+    await selPago.reiniciar();
+  }
+}
+
+function elegirMetodoPago(m){
+  pagoMetodo = m;
+  document.getElementById('metodo-efectivo').classList.toggle('active', m === 'Efectivo');
+  document.getElementById('metodo-transferencia').classList.toggle('active', m === 'Transferencia');
+  document.getElementById('pago-detalle').classList.remove('hidden');
+  document.getElementById('pago-detalle-titulo').textContent = pagoModo === 'cobranza' ? "Datos del efectivo recibido" : "2. Datos del pago";
+  const ref = document.getElementById('pago-ref');
+  if (m === 'Transferencia'){
+    document.getElementById('pago-label-ref').textContent = "Clave de rastreo o folio del comprobante";
+    ref.placeholder = "Ej. MBAN0100231015001234";
+    document.getElementById('pago-hint-ref').textContent = "Lo encuentras en el comprobante de tu banco. La administración lo busca en la cuenta para confirmar el pago.";
+  } else {
+    document.getElementById('pago-label-ref').textContent = "Folio de recibo (opcional)";
+    ref.placeholder = "Si hay recibo, su número";
+    document.getElementById('pago-hint-ref').textContent = "Si no hubo recibo, déjalo vacío.";
+  }
+}
+
+async function cargarMesesPago(){
+  const selMes = document.getElementById('pago-select-mes');
+  const hint = document.getElementById('pago-hint-mes');
+  const unidad = pagoUnidadActual();
+  pagoUnidadCargada = unidad || '';
+  pagoMesesCache = [];
+  hint.textContent = '';
+  document.getElementById('pago-monto').value = '';
+  if (!unidad){ selMes.innerHTML = '<option value="">Primero elige el depto</option>'; return; }
+  selMes.innerHTML = '<option value="">Cargando…</option>';
+  try {
+    const res = await fetch(API_URL + "?accion=adeudosPago&" + aQuery(pagoCredenciales(unidad)));
+    const data = await res.json();
+    if (unidad !== pagoUnidadCargada) return; // la selección cambió mientras cargaba
+    if (data.error){ selMes.innerHTML = '<option value="">—</option>'; hint.textContent = data.error; return; }
+    pagoMesesCache = data.meses;
+    if (!data.meses.length){
+      selMes.innerHTML = '<option value="">Sin adeudos</option>';
+      hint.textContent = 'Este depto está al corriente.';
+      return;
+    }
+    selMes.innerHTML = data.meses.map(m =>
+      `<option value="${esc(m.periodo)}" ${m.enRevision ? 'disabled' : ''}>${periodoLegible(m.periodo)}${m.monto > 0 ? ' · debe ' + fmtMXN(m.monto) : ''}${m.enRevision ? ' · en revisión' : ''}</option>`
+    ).join('');
+    const primero = data.meses.find(m => !m.enRevision);
+    if (primero){ selMes.value = primero.periodo; alCambiarMesPago(); }
+    else { selMes.value = ''; hint.textContent = 'Todos los meses pendientes ya tienen un pago en revisión.'; }
+  } catch(err){
+    selMes.innerHTML = '<option value="">—</option>';
+    hint.textContent = 'No se pudo conectar con el servidor.';
+  }
+}
+
+function alCambiarMesPago(){
+  const periodo = document.getElementById('pago-select-mes').value;
+  const m = pagoMesesCache.find(x => x.periodo === periodo);
+  document.getElementById('pago-monto').value = (m && m.monto > 0) ? m.monto : '';
+  document.getElementById('pago-hint-mes').textContent = (m && m.monto > 0) ? 'Adeudo registrado: ' + fmtMXN(m.monto) + '. Puedes ajustar el monto si pagaste distinto.' : '';
+}
+
+async function enviarPago(){
+  const errBox = document.getElementById('pago-error');
+  errBox.classList.add('hidden');
+  const mostrarError = t => { errBox.textContent = t; errBox.classList.remove('hidden'); };
+
+  const unidad = pagoUnidadActual();
+  const periodo = document.getElementById('pago-select-mes').value;
+  const monto = document.getElementById('pago-monto').value;
+  const referencia = document.getElementById('pago-ref').value.trim();
+
+  if (!pagoMetodo) return mostrarError("Elige si fue efectivo o transferencia.");
+  if (!unidad) return mostrarError("Elige el depto.");
+  if (!periodo) return mostrarError("Elige el mes que se paga.");
+  if (!(Number(monto) > 0)) return mostrarError("Escribe el monto pagado.");
+  if (pagoMetodo === 'Transferencia' && referencia.length < 4) return mostrarError("Escribe la clave de rastreo o folio del comprobante.");
+
+  const btn = document.getElementById('btn-enviar-pago');
+  btn.disabled = true;
+  btn.textContent = "Enviando…";
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify(Object.assign({ accion: "registrarPago", periodo, metodo: pagoMetodo, monto, referencia }, pagoCredenciales(unidad)))
+    });
+    const data = await res.json();
+    if (data.error){ mostrarError(data.error); return; }
+    pagoHuboCambios = true;
+    mostrarExitoPago(data, unidad, periodo);
+  } catch(err){
+    mostrarError("No se pudo conectar con el servidor.");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Enviar pago";
+  }
+}
+
+function mostrarExitoPago(data, unidad, periodo){
+  const aprobado = data.estatus === 'Aprobado';
+  const msg = aprobado
+    ? 'El mes ya aparece como pagado.'
+    : (pagoModo === 'cobranza' ? 'La administradora lo aprobará cuando reciba el efectivo.' : 'Quedó en revisión. Cuando la administración lo apruebe, tu estado se actualiza solo.');
+  const box = document.getElementById('pago-exito');
+  box.innerHTML = `
+    <div class="card" style="text-align:center;">
+      <div style="font-size:40px;">${aprobado ? '✅' : '📨'}</div>
+      <div class="card-title" style="margin:8px 0 6px;">${aprobado ? 'Pago registrado' : 'Pago enviado'}</div>
+      <div style="font-size:13px; color:var(--azul-txt); margin-bottom:4px;">${esc(unidad)} · ${periodoLegible(periodo)}</div>
+      <div class="hint" style="margin-bottom:16px;">${msg}</div>
+      <button class="btn-primary" style="width:100%; margin-bottom:10px;" onclick="otroPago()">Registrar otro pago</button>
+      <button class="btn-gris" style="width:100%;" onclick="volverDePago()">Terminar</button>
+    </div>`;
+  document.getElementById('pago-form').classList.add('hidden');
+  box.classList.remove('hidden');
+}
+
+function otroPago(){
+  document.getElementById('pago-exito').classList.add('hidden');
+  document.getElementById('pago-form').classList.remove('hidden');
+  document.getElementById('pago-monto').value = '';
+  if (pagoMetodo === 'Efectivo') document.getElementById('pago-ref').value = '';
+  cargarMesesPago();
+}
+
+async function volverDePago(){
+  if (pagoModo === 'propietario'){
+    if (pagoHuboCambios) await cargarHistorialUnidad(); else ir('s-propietario');
+  } else if (pagoModo === 'comite'){
+    await volverAComite(pagoHuboCambios);
+  } else {
+    ir('s-inicio');
+  }
+}
+
+/* ── Comité: refrescar datos y volver ── */
+async function refrescarDataComite(){
+  try {
+    const res = await fetch(API_URL + "?accion=panelComite&" + aQuery({ nombre: credComite.nombre, clave: credComite.clave }));
+    const data = await res.json();
+    if (!data.error){
+      dataComite = data;
+      document.getElementById('comite-sub').textContent = data.length + " unidades registradas";
+    }
+  } catch(err){}
+}
+
+async function volverAComite(refrescar){
+  if (refrescar) await refrescarDataComite();
+  ir('s-comite');
+  renderModuloComite(dataComite);
+}
+
+/* ── Comité: aprobar / rechazar ── */
+async function irPagosRevision(){
+  ir('s-pagos-revision');
+  document.getElementById('pagos-buscar').value = '';
+  await filtrarPagosRevision('Pendiente');
+}
+
+async function filtrarPagosRevision(estatus){
+  pagosRevisionFiltro = estatus;
+  ['Pendiente', 'Aprobado', 'Rechazado'].forEach(e => document.getElementById('pr-' + e).classList.toggle('active', e === estatus));
+  const cont = document.getElementById('pagos-revision-lista');
+  cont.innerHTML = '<div class="loader">Cargando…</div>';
+  try {
+    const res = await fetch(API_URL + "?accion=pagos&" + aQuery({ nombre: credComite.nombre, clave: credComite.clave, estatus }));
+    const data = await res.json();
+    if (data.error){ cont.innerHTML = '<div class="error-box">' + esc(data.error) + '</div>'; return; }
+    pagosRevisionCache = data;
+    renderPagosRevision();
+  } catch(err){
+    cont.innerHTML = '<div class="error-box">Error de conexión.</div>';
+  }
+}
+
+function renderPagosRevision(){
+  const q = (document.getElementById('pagos-buscar').value || '').trim().toLowerCase();
+  const cont = document.getElementById('pagos-revision-lista');
+  const lista = pagosRevisionCache.filter(p => !q || (p.unidad + ' ' + p.referencia).toLowerCase().indexOf(q) >= 0);
+  if (!lista.length){
+    cont.innerHTML = '<div style="text-align:center; color:var(--azul-txt); font-size:13px; padding:24px 0;">' +
+      (pagosRevisionFiltro === 'Pendiente' && !q ? 'No hay pagos por aprobar. 🎉' : 'Sin registros.') + '</div>';
+    return;
+  }
+  cont.innerHTML = lista.map(p => {
+    const origen = p.origen === 'Propietario' ? esc(p.por) : esc(p.origen) + ' · ' + esc(p.por);
+    const refHtml = p.referencia
+      ? `<div style="background:var(--cielo-mid); border-radius:10px; padding:10px 12px; margin-top:10px; display:flex; justify-content:space-between; align-items:center; gap:8px;">
+           <div style="min-width:0;">
+             <div style="font-size:10.5px; color:var(--azul-txt); opacity:.75;">${p.metodo === 'Transferencia' ? 'Folio / clave de rastreo' : 'Folio de recibo'}</div>
+             <div style="font-weight:700; font-size:13.5px; word-break:break-all;">${esc(p.referencia)}</div>
+           </div>
+           <button class="btn-gris" style="padding:8px 12px; font-size:12px; flex-shrink:0;" data-t="${esc(p.referencia)}" onclick="copiarTexto(this)">Copiar</button>
+         </div>`
+      : `<div class="hint" style="margin-top:8px;">Sin folio (efectivo sin recibo).</div>`;
+    const alerta = p.refRepetida ? `<div class="error-box" style="margin:10px 0 0;">⚠ Este folio también aparece en otro depto.</div>` : '';
+
+    let pie;
+    if (p.estatus === 'Pendiente'){
+      pie = `
+        <div style="display:flex; gap:8px; margin-top:12px;">
+          <button class="btn-secondary" style="flex:1; padding:12px;" onclick="aprobarPago('${esc(p.id)}')">Aprobar</button>
+          <button class="btn-gris" style="flex:1;" onclick="mostrarRechazo('${esc(p.id)}')">Rechazar</button>
+        </div>
+        <div id="rech-${esc(p.id)}" class="hidden" style="margin-top:10px;">
+          <input type="text" id="rech-motivo-${esc(p.id)}" class="input-base" maxlength="140" placeholder="Motivo (ej. no encontré el folio)">
+          <button class="btn-gris" style="width:100%; margin-top:8px;" onclick="rechazarPago('${esc(p.id)}')">Confirmar rechazo</button>
+        </div>`;
+    } else {
+      pie = `<div class="hint" style="margin-top:10px;">${esc(p.estatus)} por ${esc(p.reviso)} · ${esc(p.fechaRevision.slice(0, 10))}${p.nota ? '<br>' + esc(p.nota) : ''}</div>`;
+    }
+
+    return `
+      <div class="card" style="padding:14px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+          <div>
+            <div style="font-family:'Playfair Display',serif; font-size:18px; font-weight:700;">${esc(p.unidad)}</div>
+            <div style="font-size:12px; color:var(--azul-txt);">${periodoLegible(p.periodo)}</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-family:'Playfair Display',serif; font-size:18px; font-weight:700; color:var(--dorado);">${fmtMXN(p.monto)}</div>
+            <div style="font-size:11.5px; color:var(--azul-txt);">${p.metodo === 'Efectivo' ? '💵' : '🏦'} ${esc(p.metodo)}</div>
+          </div>
+        </div>
+        ${refHtml}
+        ${alerta}
+        <div class="hint" style="margin-top:8px;">Registró: ${origen} · ${esc(p.fecha.slice(0, 10))}</div>
+        ${pie}
+      </div>`;
+  }).join('');
+}
+
+function copiarTexto(btn){
+  const t = btn.dataset.t || '';
+  const listo = () => { const antes = btn.textContent; btn.textContent = 'Copiado ✓'; setTimeout(() => { btn.textContent = antes; }, 1500); };
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(t).then(listo).catch(() => {});
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = t; document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); listo(); } catch(e){}
+    document.body.removeChild(ta);
+  }
+}
+
+function mostrarRechazo(id){
+  document.getElementById('rech-' + id).classList.toggle('hidden');
+}
+
+async function aprobarPago(id){
+  const p = pagosRevisionCache.find(x => x.id === id);
+  if (!p) return;
+  if (!confirm('¿Aprobar el pago de ' + p.unidad + ' (' + periodoLegible(p.periodo) + ', ' + fmtMXN(p.monto) + ')?\nEl mes quedará como pagado.')) return;
+  await resolverPagoUI(id, 'Aprobar', '');
+}
+
+async function rechazarPago(id){
+  const nota = document.getElementById('rech-motivo-' + id).value.trim();
+  if (nota.length < 3){ alert('Escribe un motivo corto para el rechazo.'); return; }
+  await resolverPagoUI(id, 'Rechazar', nota);
+}
+
+async function resolverPagoUI(id, decision, nota){
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify({ accion: "resolverPago", nombre: credComite.nombre, clave: credComite.clave, id, decision, nota })
+    });
+    const data = await res.json();
+    if (data.error){ alert(data.error); return; }
+    if (data.aviso) alert(data.aviso);
+    await filtrarPagosRevision(pagosRevisionFiltro);
+  } catch(err){
+    alert("No se pudo conectar con el servidor.");
+  }
+}
+
+/* ── Guía rápida ── */
+function abrirGuia(rol){
+  guiaVolver = rol === 'propietario' ? 's-propietario' : (rol === 'cobranza' ? 's-registrar-pago' : 's-comite');
+  document.getElementById('guia-contenido').innerHTML = construirGuia(rol);
+  ir('s-guia-pago');
+}
+
+function tarjetaGuia(icono, titulo, pasos, nota){
+  return `
+    <div class="card">
+      <div class="card-title">${icono} ${titulo}</div>
+      ${pasos.map((t, i) => `<div class="guia-paso"><div class="guia-num">${i + 1}</div><div class="guia-txt">${t}</div></div>`).join('')}
+      ${nota ? `<div class="hint" style="margin-top:4px;">${nota}</div>` : ''}
+    </div>`;
+}
+
+function construirGuia(rol){
+  const propietario = tarjetaGuia('🏠', 'Si eres propietario', [
+    'Entra a tu depto y toca <b>Registrar mi pago</b> (arriba, en Finanzas).',
+    'Elige cómo pagaste: <b>Efectivo</b> o <b>Transferencia</b>.',
+    'Elige el mes, revisa el monto y escribe el <b>folio o clave de rastreo</b> que aparece en tu comprobante.',
+    'Toca <b>Enviar pago</b>. Aparecerá <b>En revisión</b> hasta que la administración lo apruebe; después tu estado se actualiza solo.'
+  ], '🔒 Nunca escribas nombres ni números de cuenta. Si pagaste varios meses con un solo comprobante, registra cada mes con el mismo folio.');
+
+  const cobranza = tarjetaGuia('💵', 'Si recibes efectivo (Cobranza)', [
+    'Entra con tu nombre y clave en <b>Entrar como Personal</b>.',
+    'Escribe el depto que te entregó el dinero y elígelo de la lista.',
+    'Elige el mes, confirma el monto y, si diste recibo, escribe su número.',
+    'Toca <b>Enviar pago</b>. La administradora lo aprueba cuando le entregas el efectivo.'
+  ], 'Si el mes ya tiene un pago en revisión, aparecerá marcado y no necesitas registrarlo otra vez.');
+
+  const admin = tarjetaGuia('✅', 'Si eres la administración', [
+    'Toca <b>Por aprobar</b>: cada tarjeta muestra depto, mes, monto, método y folio.',
+    'En transferencias, toca <b>Copiar</b>, busca el folio en tu cuenta bancaria y compara el monto.',
+    'Si coincide, toca <b>Aprobar</b>: el mes pasa a Pagado automáticamente. Si no, toca <b>Rechazar</b> y escribe un motivo corto.',
+    'Si alguien te paga directo, usa <b>Registrar pago</b>: queda aprobado al instante.',
+    'En <b>Cobranza del mes</b> ves cuántos han pagado y cuántos no, sin mostrar deptos.'
+  ], 'Para dar acceso a quien recibe efectivo: Agregar personal → función <b>Cobranza</b>.');
+
+  if (rol === 'propietario') return propietario;
+  if (rol === 'cobranza') return cobranza;
+  return admin + propietario + cobranza;
 }
 
 aplicarBrandingPrivada();
