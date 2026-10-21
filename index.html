@@ -568,7 +568,7 @@ body { font-family:'Segoe UI',Arial,sans-serif; background:var(--cielo-deep); co
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwG39bCEOlbU5QHp4GDSm4yTcmtynOSc6Gv0w6wz1YBQtOHcEJ_4UR_QzK0MsHCNs06/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbyHXBseWA093XXe3yE2WLx2OZMS8mTiBJIagpLSxWXcJwJbV3NKaA6kyEN0QY58Q7g6/exec";
 let dataUnidad = null;   // datos de UN solo propietario logueado
 let dataComite = null;   // datos completos, solo tras login válido del comité
 let credComite = { nombre: "", clave: "" }; // credenciales guardadas tras login, para reusar en otras pantallas
@@ -2081,9 +2081,9 @@ function elegirMetodoPago(m){
     ref.placeholder = "Ej. MBAN0100231015001234";
     document.getElementById('pago-hint-ref').textContent = "Lo encuentras en el comprobante de tu banco. La administración lo busca en la cuenta para confirmar el pago.";
   } else {
-    document.getElementById('pago-label-ref').textContent = "Folio de recibo (opcional)";
-    ref.placeholder = "Si hay recibo, su número";
-    document.getElementById('pago-hint-ref').textContent = "Si no hubo recibo, déjalo vacío.";
+    document.getElementById('pago-label-ref').textContent = "Folio o número del recibo";
+    ref.placeholder = "Número impreso en el recibo";
+    document.getElementById('pago-hint-ref').textContent = "Es obligatorio: con este número la administración confirma tu pago.";
   }
 }
 
@@ -2145,6 +2145,7 @@ async function enviarPago(){
   if (!periodo) return mostrarError("Elige el mes que se paga.");
   if (!(Number(monto) > 0)) return mostrarError("Escribe el monto pagado.");
   if (pagoMetodo === 'Transferencia' && referencia.length < 4) return mostrarError("Escribe la clave de rastreo o folio del comprobante.");
+  if (pagoMetodo === 'Efectivo' && !referencia) return mostrarError("Escribe el folio o número del recibo.");
 
   const btn = document.getElementById('btn-enviar-pago');
   btn.disabled = true;
@@ -2372,8 +2373,8 @@ function construirGuia(rol){
 
   const cobranza = tarjetaGuia('💵', 'Si recibes efectivo (Cobranza)', [
     'Entra con tu nombre y clave en <b>Entrar como Personal</b>.',
-    'Escribe el depto que te entregó el dinero y elígelo de la lista.',
-    'Elige el mes, confirma el monto y, si diste recibo, escribe su número.',
+    'Toca el edificio y luego el nivel (A, B, C o D) del depto que te entregó el dinero.',
+    'Elige el mes, confirma el monto y escribe el <b>número del recibo</b> que entregaste.',
     'Toca <b>Enviar pago</b>. La administradora lo aprueba cuando le entregas el efectivo.'
   ], 'Si el mes ya tiene un pago en revisión, aparecerá marcado y no necesitas registrarlo otra vez.');
 
