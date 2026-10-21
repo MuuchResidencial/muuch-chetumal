@@ -568,7 +568,7 @@ body { font-family:'Segoe UI',Arial,sans-serif; background:var(--cielo-deep); co
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwEFsUtApUwlrmzH2I5U_ZUBtirrI3OOVPYtFlU7hOZZZr9RuuJKZXtRn6FZ96ZNdvZ/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwZMHXrFzE7jSCCKd6kT2E0m7NwlZXVK1sL2BZr9HKHFZxgVL7Hw3Be9m0Cw0qJOE8f/exec";
 let dataUnidad = null;   // datos de UN solo propietario logueado
 let dataComite = null;   // datos completos, solo tras login válido del comité
 let credComite = { nombre: "", clave: "" }; // credenciales guardadas tras login, para reusar en otras pantallas
@@ -1906,17 +1906,16 @@ function construirMarcadorUnidades(r){
 function construirBloquePagoProp(u){
   const hayAdeudo = u.historial.some(h => h.estado === 'Adeudo');
   let html = '';
-  if (hayAdeudo){
-    html += `
-      <div class="pago-hero" onclick="abrirRegistrarPago('propietario')">
-        <div class="ph-icon">🧾</div>
-        <div><div class="ph-titulo">Registrar mi pago</div><div class="ph-sub">Efectivo o transferencia · toma 1 minuto</div></div>
-        <div class="ph-flecha">›</div>
-      </div>`;
-  } else {
+  if (!hayAdeudo){
     html += `<div class="msg ok show" style="text-align:center;">🎉 Estás al corriente, no tienes pagos pendientes.</div>`;
   }
-  html += `<div style="text-align:center; margin:-2px 0 12px;"><a class="link-guia" onclick="abrirGuia('propietario')">¿Cómo registro mi pago?</a></div>`;
+  // Siempre disponible: con adeudo paga lo que debe; al corriente puede adelantar sus próximos meses
+  html += `
+    <div class="pago-hero" onclick="abrirRegistrarPago('propietario')">
+      <div class="ph-icon">🧾</div>
+      <div><div class="ph-titulo">Registrar pago</div><div class="ph-sub">${hayAdeudo ? 'Efectivo o transferencia · toma 1 minuto' : 'Adelanta tus próximos meses · efectivo o transferencia'}</div></div>
+      <div class="ph-flecha">›</div>
+    </div>`;
   html += `<div id="prop-pagos-recientes"></div>`;
   return html;
 }
@@ -2101,7 +2100,7 @@ async function cargarMesesPago(){
       return;
     }
     selMes.innerHTML = data.meses.map(m =>
-      `<option value="${esc(m.periodo)}" ${m.enRevision ? 'disabled' : ''}>${periodoLegible(m.periodo)}${m.monto > 0 ? ' · debe ' + fmtMXN(m.monto) : ''}${m.enRevision ? ' · en revisión' : ''}</option>`
+      `<option value="${esc(m.periodo)}" ${m.enRevision ? 'disabled' : ''}>${periodoLegible(m.periodo)}${m.adelantado ? ' · pago adelantado' : (m.monto > 0 ? ' · debe ' + fmtMXN(m.monto) : '')}${m.enRevision ? ' · en revisión' : ''}</option>`
     ).join('');
     const primero = data.meses.find(m => !m.enRevision);
     if (primero){ selMes.value = primero.periodo; alCambiarMesPago(); }
@@ -2116,7 +2115,10 @@ function alCambiarMesPago(){
   const periodo = document.getElementById('pago-select-mes').value;
   const m = pagoMesesCache.find(x => x.periodo === periodo);
   document.getElementById('pago-monto').value = (m && m.monto > 0) ? m.monto : '';
-  document.getElementById('pago-hint-mes').textContent = (m && m.monto > 0) ? 'Adeudo registrado: ' + fmtMXN(m.monto) + '. Puedes ajustar el monto si pagaste distinto.' : '';
+  let hintMes = '';
+  if (m && m.adelantado) hintMes = (m.monto > 0 ? 'Tu última cuota fue ' + fmtMXN(m.monto) + '. ' : '') + 'Es un pago adelantado: revisa que el monto sea el correcto.';
+  else if (m && m.monto > 0) hintMes = 'Adeudo registrado: ' + fmtMXN(m.monto) + '. Puedes ajustar el monto si pagaste distinto.';
+  document.getElementById('pago-hint-mes').textContent = hintMes;
 }
 
 async function enviarPago(){
