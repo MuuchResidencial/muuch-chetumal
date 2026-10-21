@@ -518,7 +518,7 @@ body { font-family:'Segoe UI',Arial,sans-serif; background:var(--cielo-deep); co
         <button class="btn-primary" style="width:100%;" id="btn-enviar-pago" onclick="enviarPago()">Enviar pago</button>
       </div>
 
-      <div style="text-align:center; margin-top:4px;"><a class="link-guia" onclick="abrirGuia(pagoModo)">¿Cómo funciona?</a></div>
+      <div style="text-align:center; margin-top:4px;"><a class="link-guia" onclick="abrirGuia(pagoModo, 's-registrar-pago')">¿Cómo funciona?</a></div>
     </div>
     <div id="pago-exito" class="hidden"></div>
   </div>
@@ -568,7 +568,7 @@ body { font-family:'Segoe UI',Arial,sans-serif; background:var(--cielo-deep); co
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwZMHXrFzE7jSCCKd6kT2E0m7NwlZXVK1sL2BZr9HKHFZxgVL7Hw3Be9m0Cw0qJOE8f/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwG39bCEOlbU5QHp4GDSm4yTcmtynOSc6Gv0w6wz1YBQtOHcEJ_4UR_QzK0MsHCNs06/exec";
 let dataUnidad = null;   // datos de UN solo propietario logueado
 let dataComite = null;   // datos completos, solo tras login válido del comité
 let credComite = { nombre: "", clave: "" }; // credenciales guardadas tras login, para reusar en otras pantallas
@@ -586,8 +586,17 @@ function ir(id){
 
 function periodoLegible(p){
   const meses = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
-  const [y,m] = p.split("-");
-  return meses[parseInt(m,10)-1] + " " + y;
+  const m = /^(\d{4})-(\d{1,2})/.exec(String(p));
+  if (!m || parseInt(m[2],10) < 1 || parseInt(m[2],10) > 12) return String(p);
+  return meses[parseInt(m[2],10)-1] + " " + m[1];
+}
+
+/* "2026-10-20 19:40" → "20 oct 2026" (vacío si no se entiende) */
+function fechaCorta(f){
+  const meses = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(f || ""));
+  if (!m || parseInt(m[2],10) < 1 || parseInt(m[2],10) > 12) return "";
+  return parseInt(m[3],10) + " " + meses[parseInt(m[2],10)-1] + " " + m[1];
 }
 
 function ultimoEstado(historial){
@@ -1932,7 +1941,7 @@ async function cargarPagosRecientesProp(){
       <div class="pago-fila">
         <div>
           <div style="font-size:13.5px; font-weight:700;">${periodoLegible(p.periodo)} · ${fmtMXN(p.monto)}</div>
-          <div class="hint" style="margin-top:2px;">${p.metodo === 'Efectivo' ? '💵' : '🏦'} ${esc(p.metodo)}${p.estatus === 'Rechazado' && p.nota ? ' · Motivo: ' + esc(p.nota) : ''}</div>
+          <div class="hint" style="margin-top:2px; word-break:break-all;">${p.metodo === 'Efectivo' ? '💵' : '🏦'} ${[p.referencia ? 'Folio ' + esc(p.referencia) : '', esc(fechaCorta(p.fecha))].filter(Boolean).join('<br>')}${p.estatus === 'Rechazado' && p.nota ? '<br>Motivo: ' + esc(p.nota) : ''}</div>
         </div>
         <span class="badge ${esc(p.estatus)}">${p.estatus === 'Pendiente' ? 'En revisión' : esc(p.estatus)}</span>
       </div>`).join('');
@@ -2269,7 +2278,7 @@ function renderPagosRevision(){
           <button class="btn-gris" style="width:100%; margin-top:8px;" onclick="rechazarPago('${esc(p.id)}')">Confirmar rechazo</button>
         </div>`;
     } else {
-      pie = `<div class="hint" style="margin-top:10px;">${esc(p.estatus)} por ${esc(p.reviso)} · ${esc(p.fechaRevision.slice(0, 10))}${p.nota ? '<br>' + esc(p.nota) : ''}</div>`;
+      pie = `<div class="hint" style="margin-top:10px;">${esc(p.estatus)} por ${esc(p.reviso)} · ${esc(fechaCorta(p.fechaRevision))}${p.nota ? '<br>' + esc(p.nota) : ''}</div>`;
     }
 
     return `
@@ -2286,7 +2295,7 @@ function renderPagosRevision(){
         </div>
         ${refHtml}
         ${alerta}
-        <div class="hint" style="margin-top:8px;">Registró: ${origen} · ${esc(p.fecha.slice(0, 10))}</div>
+        <div class="hint" style="margin-top:8px;">Registró: ${origen} · ${esc(fechaCorta(p.fecha))}</div>
         ${pie}
       </div>`;
   }).join('');
@@ -2338,8 +2347,8 @@ async function resolverPagoUI(id, decision, nota){
 }
 
 /* ── Guía rápida ── */
-function abrirGuia(rol){
-  guiaVolver = rol === 'propietario' ? 's-propietario' : (rol === 'cobranza' ? 's-registrar-pago' : 's-comite');
+function abrirGuia(rol, volverA){
+  guiaVolver = volverA || (rol === 'propietario' ? 's-propietario' : (rol === 'cobranza' ? 's-registrar-pago' : 's-comite'));
   document.getElementById('guia-contenido').innerHTML = construirGuia(rol);
   ir('s-guia-pago');
 }
